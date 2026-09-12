@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Semana de Tecnologia</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: oklch(0.15 0.012 260);
+    color: oklch(0.96 0.005 260);
+    font-family: 'Work Sans', system-ui, sans-serif;
+  }
+  ::selection { background: oklch(0.78 0.19 152 / 0.35); }
+  a { color: oklch(0.78 0.19 152); text-decoration: none; }
+  a:hover { color: oklch(0.86 0.19 152); }
+
+  /* animação de entrada da seção de empresas quando o dia 28 é marcado */
+  @keyframes revealIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .reveal { animation: revealIn 0.5s cubic-bezier(0.2,0.7,0.2,1) both; }
+
+  .wrap { min-height: 100vh; position: relative; overflow: hidden; }
+
+  /* topo da página: nome do evento e as datas */
+  .hero { position: relative; padding: 96px 24px 120px; overflow: hidden; border-bottom: 1px solid oklch(0.32 0.02 260 / 0.5); }
+  .hero-dots { position: absolute; inset: 0; background-image: radial-gradient(oklch(0.4 0.02 260 / 0.6) 1px, transparent 1px); background-size: 28px 28px; opacity: 0.5; }
+  .hero-glow { position: absolute; top: -180px; left: 50%; transform: translateX(-50%); width: 720px; height: 420px; background: radial-gradient(oklch(0.78 0.19 152 / 0.22), transparent 70%); filter: blur(10px); }
+  .hero-inner { position: relative; max-width: 880px; margin: 0 auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+  .badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border: 1px solid oklch(0.32 0.02 260); border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: oklch(0.78 0.19 152); background: oklch(0.19 0.014 260); }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: oklch(0.78 0.19 152); }
+  h1 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(34px, 9vw, 68px); line-height: 1.08; letter-spacing: -0.02em; text-wrap: pretty; }
+  .subtitle { margin: 0; max-width: 560px; font-size: clamp(15px, 4vw, 18px); line-height: 1.55; color: oklch(0.70 0.02 260); text-wrap: pretty; }
+  .pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  .pill { padding: 8px 16px; border-radius: 8px; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); color: oklch(0.86 0.02 260); }
+  .place { margin-top: 4px; font-size: 13px; color: oklch(0.55 0.02 260); }
+
+  /* contagem regressiva até a abertura do evento */
+  .countdown { display: flex; justify-content: center; gap: 14px; margin-top: 4px; flex-wrap: wrap; }
+  .countdown-unit { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 68px; padding: 12px 10px; border-radius: 10px; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); }
+  .countdown-value { font-family: 'JetBrains Mono', monospace; font-size: clamp(22px, 5vw, 30px); font-weight: 600; color: oklch(0.78 0.19 152); line-height: 1; }
+  .countdown-unit-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: oklch(0.55 0.02 260); }
+  .countdown-started { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: oklch(0.78 0.19 152); }
+
+  /* seção onde a pessoa marca em quais dias vai participar */
+  .days-section { max-width: 1080px; margin: 0 auto; padding: 88px 24px 40px; }
+  .section-head { text-align: center; margin-bottom: 40px; display: flex; flex-direction: column; gap: 10px; }
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: oklch(0.78 0.19 152); text-transform: uppercase; }
+  h2 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(26px, 3.4vw, 34px); }
+  .days-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+
+  .day-card { cursor: pointer; text-align: left; padding: 24px; border-radius: 16px; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); display: flex; flex-direction: column; gap: 14px; transition: border-color 0.15s ease; }
+  .day-card.active { border-color: oklch(0.78 0.19 152); }
+  .day-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .day-date { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 600; color: oklch(0.96 0.005 260); }
+  .day-tag { display: inline-block; width: fit-content; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 999px; text-transform: uppercase; }
+  .day-tag.linux { background: oklch(0.78 0.15 70 / 0.18); color: oklch(0.78 0.15 70); }
+  .day-tag.talks { background: oklch(0.32 0.02 260 / 0.5); color: oklch(0.75 0.02 260); }
+  .day-tag.invest { background: oklch(0.78 0.19 152 / 0.18); color: oklch(0.78 0.19 152); }
+  .day-desc { margin: 0; font-size: 14.5px; line-height: 1.5; color: oklch(0.70 0.02 260); }
+
+  /* checkbox customizado usado nos cards de dia e nos cards de empresa */
+  .check {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 7px;
+    border: 2px solid oklch(0.32 0.02 260); background: transparent;
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s ease;
+  }
+  .check.small { width: 24px; height: 24px; border-radius: 6px; }
+  .check.checked { border-color: oklch(0.78 0.19 152); background: oklch(0.78 0.19 152); }
+  .check svg { display: none; }
+  .check.checked svg { display: block; }
+
+  /* seção de empresas, só aparece quando o dia 28 é marcado */
+  .companies-section { display: none; max-width: 1080px; margin: 0 auto; padding: 56px 24px 20px; }
+  .companies-section.visible { display: block; }
+  .companies-sub { margin: 0; font-size: 14.5px; color: oklch(0.60 0.02 260); }
+  .companies-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+
+  .company-card { cursor: pointer; padding: 22px; border-radius: 16px; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); display: flex; flex-direction: column; gap: 14px; transition: border-color 0.15s ease; }
+  .company-card.active { border-color: oklch(0.78 0.19 152); }
+  .company-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .company-logo { width: 46px; height: 46px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; color: white; flex-shrink: 0; }
+  .company-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 16px; }
+  .company-tagline { margin: 0; font-size: 13.5px; line-height: 1.5; color: oklch(0.65 0.02 260); }
+
+  /* resumo do que foi marcado e o botão de confirmar */
+  .cta { max-width: 640px; margin: 0 auto; padding: 72px 24px 96px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .summary { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: oklch(0.60 0.02 260); }
+  .confirm-btn { cursor: pointer; padding: 16px 40px; border-radius: 12px; border: none; background: oklch(0.32 0.02 260); color: oklch(0.55 0.02 260); font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 16px; }
+  .confirm-btn.enabled { background: #31d17a; color: oklch(0.12 0.01 260); box-shadow: 0 8px 24px oklch(0.78 0.19 152 / 0.25); }
+  .confirmed-msg { display: none; align-items: center; gap: 10px; padding: 16px 28px; border-radius: 12px; background: oklch(0.78 0.19 152 / 0.14); border: 1px solid oklch(0.78 0.19 152 / 0.4); color: oklch(0.86 0.19 152); font-weight: 600; }
+  .confirmed-msg.visible { display: flex; }
+
+  /* rodapé, trocar pelos dados reais do evento */
+  .footer { border-top: 1px solid oklch(0.32 0.02 260 / 0.5); padding: 28px 24px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: oklch(0.50 0.02 260); }
+
+  /* modal de inscrição */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+    align-items: center; justify-content: center; padding: 24px; z-index: 50;
+  }
+  .modal-overlay.visible { display: flex; }
+  .modal {
+    width: 100%; max-width: 420px; background: oklch(0.19 0.014 260);
+    border: 1px solid oklch(0.32 0.02 260); border-radius: 16px; padding: 28px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .modal-head h3 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 20px; }
+  .modal-close {
+    cursor: pointer; background: transparent; border: none; color: oklch(0.65 0.02 260);
+    font-size: 22px; line-height: 1; width: 44px; height: 44px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; margin: -10px -10px -10px 0;
+  }
+  .modal-close:hover { color: oklch(0.96 0.005 260); }
+  .modal form { display: flex; flex-direction: column; gap: 14px; }
+  .modal label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: oklch(0.70 0.02 260); }
+  .modal input {
+    font-family: 'Work Sans', system-ui, sans-serif; font-size: 16px; color: oklch(0.96 0.005 260);
+    background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260); border-radius: 8px;
+    padding: 13px 14px; min-height: 44px;
+  }
+  .modal input:focus { outline: none; border-color: oklch(0.78 0.19 152); }
+  .modal-note { margin: 0; font-size: 12.5px; line-height: 1.5; color: oklch(0.55 0.02 260); }
+  .modal-submit {
+    cursor: pointer; padding: 14px; border-radius: 10px; border: none; background: #31d17a;
+    color: oklch(0.12 0.01 260); font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .modal-submit:disabled { cursor: not-allowed; opacity: 0.85; }
+  .modal-submit .spinner { display: none; width: 16px; height: 16px; border-radius: 50%; border: 2px solid oklch(0.12 0.01 260 / 0.3); border-top-color: oklch(0.12 0.01 260); animation: spin 0.7s linear infinite; }
+  .modal-submit.loading .spinner { display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 720px) {
+    .days-grid, .companies-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 900px) and (min-width: 721px) {
+    .companies-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  /* ajustes finos pra celular: menos espaço vazio, tudo mais compacto */
+  @media (max-width: 560px) {
+    .hero { padding: 56px 20px 64px; }
+    .days-section { padding: 56px 20px 32px; }
+    .companies-section { padding: 40px 20px 16px; }
+    .cta { padding: 48px 20px 64px; }
+    .footer { padding: 20px 16px; }
+    .days-grid, .companies-grid { gap: 14px; }
+    .day-card, .company-card { padding: 18px; }
+    .pills { gap: 8px; }
+    .pill { padding: 7px 12px; font-size: 12px; }
+    .confirm-btn { width: 100%; padding: 15px 24px; }
+    .modal { padding: 22px; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-dots"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div class="badge"><span class="badge-dot"></span>26 A 28 DE OUTUBRO</div>
+      <h1>Semana de Tecnologia</h1>
+      <p class="subtitle">Três dias de palestras, exposições e o Linux Day — encerrando com a apresentação de projetos de alunos formandos para investidores.</p>
+      <div class="pills">
+        <span class="pill">26/10 · Linux Day</span>
+        <span class="pill">27/10 · Palestras</span>
+        <span class="pill">28/10 · Investidores</span>
+      </div>
+      <div class="countdown" id="countdown">
+        <div class="countdown-unit"><span class="countdown-value" id="cdDays">00</span><span class="countdown-unit-label">dias</span></div>
+        <div class="countdown-unit"><span class="countdown-value" id="cdHours">00</span><span class="countdown-unit-label">horas</span></div>
+        <div class="countdown-unit"><span class="countdown-value" id="cdMinutes">00</span><span class="countdown-unit-label">min</span></div>
+        <div class="countdown-unit"><span class="countdown-value" id="cdSeconds">00</span><span class="countdown-unit-label">seg</span></div>
+      </div>
+      <div class="place">[Local do evento] · [Nome da instituição]</div>
+    </div>
+  </div>
+
+  <div class="days-section">
+    <div class="section-head">
+      <span class="eyebrow">Sua presença</span>
+      <h2>Marque os dias que você vai participar</h2>
+    </div>
+
+    <div class="days-grid">
+
+      <div class="day-card" data-day="day26">
+        <div class="day-card-top">
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <span class="day-date">26/10</span>
+            <span class="day-tag linux">Linux Day</span>
+          </div>
+          <div class="check">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+        </div>
+        <p class="day-desc">Exposição de empresas e palestras abertas sobre o ecossistema open source.</p>
+      </div>
+
+      <div class="day-card" data-day="day27">
+        <div class="day-card-top">
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <span class="day-date">27/10</span>
+            <span class="day-tag talks">Palestras</span>
+          </div>
+          <div class="check">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+        </div>
+        <p class="day-desc">Palestras com convidados do mercado e continuação da exposição de empresas.</p>
+      </div>
+
+      <div class="day-card" data-day="day28">
+        <div class="day-card-top">
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <span class="day-date">28/10</span>
+            <span class="day-tag invest">Investidores</span>
+          </div>
+          <div class="check">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+        </div>
+        <p class="day-desc">Exposição de empresas e apresentação dos projetos de alunos formandos para investidores.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="companies-section" id="companiesSection">
+    <div class="section-head">
+      <span class="eyebrow">Dia 28 · Apresentações</span>
+      <h2>Escolha quais empresas você quer acompanhar</h2>
+      <p class="companies-sub">Projetos de alunos do último ano em busca de investidores.</p>
+    </div>
+    <div class="companies-grid" id="companiesGrid"></div>
+  </div>
+
+  <div class="cta">
+    <p class="summary" id="summaryText">Selecione ao menos um dia para confirmar sua inscrição.</p>
+    <button class="confirm-btn" id="confirmBtn" disabled>Confirmar inscrição</button>
+    <div class="confirmed-msg" id="confirmedMsg">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      Inscrição confirmada!
+    </div>
+  </div>
+
+  <div class="footer">Semana de Tecnologia · [Nome da instituição] · [Endereço do evento] · [contato@email.com]</div>
+
+</div>
+
+<!-- modal que abre ao clicar em "Confirmar inscrição" -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Confirmar inscrição</h3>
+      <button class="modal-close" id="modalClose" type="button" aria-label="Fechar">×</button>
+    </div>
+    <form id="registrationForm">
+      <label>Nome completo
+        <input type="text" id="fieldName" required>
+      </label>
+      <label>Telefone
+        <input type="tel" id="fieldPhone" placeholder="(00) 00000-0000" required>
+      </label>
+      <label>E-mail
+        <input type="email" id="fieldEmail" placeholder="voce@email.com" required>
+      </label>
+      <p class="modal-note" id="modalSummary"></p>
+      <p class="modal-note">Ao confirmar, sua inscrição é enviada automaticamente para a organização.</p>
+      <button type="submit" class="modal-submit" id="modalSubmit">
+        <span class="spinner"></span>
+        <span id="modalSubmitLabel">Confirmar inscrição</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // URL do Web App do Google Apps Script (veja google-apps-script.gs neste repositório
+  // para o código a publicar). Troque pela URL gerada após o deploy.
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwJ-LdDo4kyb1EykP4rAnEpXUhH9T1oDC0AC9j_uYeHjFvAf57SbnXZ2f7Qc9QIFass/exec';
+
+  // dados de exemplo das empresas, é só substituir pelas empresas reais
+  const companyData = [
+    { id: 'c1', name: 'NexaCode', initials: 'NC', hue: 152, tagline: 'Automação de testes de software com IA, reduzindo em até 70% o tempo de QA em times ágeis.' },
+    { id: 'c2', name: 'AgroSense', initials: 'AS', hue: 200, tagline: 'Sensores IoT de baixo custo para monitorar solo e irrigação em pequenas propriedades rurais.' },
+    { id: 'c3', name: 'MedPulse', initials: 'MP', hue: 280, tagline: 'Pulseira e app para monitoramento remoto de pacientes crônicos, com alertas em tempo real.' },
+    { id: 'c4', name: 'EcoRota', initials: 'ER', hue: 20, tagline: 'Otimização de rotas de entrega urbana para reduzir emissão de carbono e custo logístico.' },
+    { id: 'c5', name: 'FinLume', initials: 'FL', hue: 320, tagline: 'Educação financeira gamificada para universitários, com simulador de investimentos.' },
+    { id: 'c6', name: 'SafeCampus', initials: 'SC', hue: 70, tagline: 'App de segurança para campus universitário com botão de pânico e rotas seguras à noite.' }
+  ];
+
+  // guarda quais dias e quais empresas estão marcados
+  const state = {
+    day26: false,
+    day27: false,
+    day28: false,
+    confirmed: false,
+    companies: {}
+  };
+
+  const companiesGrid = document.getElementById('companiesGrid');
+
+  // monta a grade de empresas uma única vez; os cliques atualizam classe/estado depois
+  companyData.forEach((c) => {
+    const card = document.createElement('div');
+    card.className = 'company-card';
+    card.dataset.companyId = c.id;
+    card.innerHTML = `
+      <div class="company-top">
+        <div class="company-logo" style="background: oklch(0.60 0.13 ${c.hue})">${c.initials}</div>
+        <div class="check small">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span class="company-name">${c.name}</span>
+        <p class="company-tagline">${c.tagline}</p>
+      </div>
+    `;
+    card.addEventListener('click', () => {
+      state.companies[c.id] = !state.companies[c.id];
+      render();
+    });
+    companiesGrid.appendChild(card);
+  });
+
+  // clique no card inteiro alterna o estado daquele dia
+  document.querySelectorAll('.day-card').forEach((card) => {
+    card.addEventListener('click', () => {
+      const day = card.dataset.day;
+      state[day] = !state[day];
+      render();
+    });
+  });
+
+  const confirmBtn = document.getElementById('confirmBtn');
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalClose = document.getElementById('modalClose');
+  const modalSummary = document.getElementById('modalSummary');
+  const registrationForm = document.getElementById('registrationForm');
+  const modalSubmit = document.getElementById('modalSubmit');
+  const modalSubmitLabel = document.getElementById('modalSubmitLabel');
+
+  // nomes legíveis dos dias, usados no resumo do modal e na planilha
+  const dayLabels = {
+    day26: '26/10 - Linux Day',
+    day27: '27/10 - Palestras',
+    day28: '28/10 - Investidores'
+  };
+
+  confirmBtn.addEventListener('click', () => {
+    const diasSelecionados = ['day26', 'day27', 'day28'].filter((d) => state[d]).map((d) => dayLabels[d]);
+    if (diasSelecionados.length === 0) return;
+
+    const empresasSelecionadas = companyData.filter((c) => state.companies[c.id]).map((c) => c.name);
+    let resumo = `Dias selecionados: ${diasSelecionados.join(', ')}`;
+    if (empresasSelecionadas.length > 0) {
+      resumo += ` · Empresas: ${empresasSelecionadas.join(', ')}`;
+    }
+    modalSummary.textContent = resumo;
+
+    modalOverlay.classList.add('visible');
+  });
+
+  function closeModal() {
+    modalOverlay.classList.remove('visible');
+  }
+  modalClose.addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', (event) => {
+    if (event.target === modalOverlay) closeModal();
+  });
+
+  registrationForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const nome = document.getElementById('fieldName').value.trim();
+    const telefone = document.getElementById('fieldPhone').value.trim();
+    const email = document.getElementById('fieldEmail').value.trim();
+    if (!nome || !telefone || !email) return;
+
+    const registro = {
+      nome,
+      telefone,
+      email,
+      dias: ['day26', 'day27', 'day28'].filter((d) => state[d]).map((d) => dayLabels[d]).join('; '),
+      empresas: companyData.filter((c) => state.companies[c.id]).map((c) => c.name).join('; ')
+    };
+
+    // trava o botão e mostra o spinner enquanto o envio está em andamento
+    modalSubmit.disabled = true;
+    modalSubmit.classList.add('loading');
+    modalSubmitLabel.textContent = 'Enviando...';
+
+    // envia a inscrição para a planilha do Google (Apps Script). mode 'no-cors' é necessário
+    // porque o Apps Script não responde ao preflight CORS; por isso não dá pra checar o
+    // resultado aqui, mas o Apps Script grava a linha mesmo assim.
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(registro)
+      });
+    } catch (err) {
+      console.error('Falha ao enviar inscrição', err);
+    }
+
+    modalSubmit.disabled = false;
+    modalSubmit.classList.remove('loading');
+    modalSubmitLabel.textContent = 'Confirmar inscrição';
+
+    registrationForm.reset();
+    closeModal();
+    state.confirmed = true;
+    render();
+  });
+
+  function render() {
+    // atualiza visual dos cards de dia
+    document.querySelectorAll('.day-card').forEach((card) => {
+      const day = card.dataset.day;
+      const checked = state[day];
+      card.classList.toggle('active', checked);
+      card.querySelector('.check').classList.toggle('checked', checked);
+    });
+
+    // mostra ou esconde a seção de empresas conforme o dia 28
+    document.getElementById('companiesSection').classList.toggle('visible', state.day28);
+
+    // atualiza visual dos cards de empresa
+    document.querySelectorAll('.company-card').forEach((card) => {
+      const selected = !!state.companies[card.dataset.companyId];
+      card.classList.toggle('active', selected);
+      card.querySelector('.check').classList.toggle('checked', selected);
+    });
+
+    const selectedDays = ['day26', 'day27', 'day28'].filter((d) => state[d]).length;
+    const selectedCompanies = Object.values(state.companies).filter(Boolean).length;
+    // no dia 28 é preciso marcar pelo menos uma empresa pra poder confirmar
+    const canConfirm = selectedDays > 0 && (!state.day28 || selectedCompanies > 0);
+
+    // texto que aparece em cima do botão, muda conforme o que já foi marcado
+    let summaryText = 'Selecione ao menos um dia para confirmar sua inscrição.';
+    if (selectedDays > 0) {
+      summaryText = `Você selecionou ${selectedDays} dia${selectedDays > 1 ? 's' : ''}`;
+      if (state.day28 && selectedCompanies > 0) {
+        summaryText += ` e ${selectedCompanies} apresentaç${selectedCompanies > 1 ? 'ões' : 'ão'}`;
+      }
+      summaryText += '.';
+      if (state.day28 && selectedCompanies === 0) {
+        summaryText = 'Escolha ao menos uma empresa do dia 28 para confirmar sua inscrição.';
+      }
+    }
+    document.getElementById('summaryText').textContent = summaryText;
+
+    confirmBtn.disabled = !canConfirm;
+    confirmBtn.classList.toggle('enabled', canConfirm);
+    confirmBtn.style.display = state.confirmed ? 'none' : 'block';
+    document.getElementById('confirmedMsg').classList.toggle('visible', state.confirmed);
+  }
+
+  render();
+
+  // contagem regressiva até a abertura do evento (edição vigente calculada
+  // automaticamente: passado o dia 28, o alvo vira a edição do ano seguinte)
+  (function () {
+    const MES_EVENTO = 9; // outubro (Date usa mês 0-indexado)
+    const DIA_INICIO = 26;
+    const DIA_FIM = 28;
+    const HORA_ABERTURA = 19;
+    const MINUTO_ABERTURA = 30;
+
+    const countdownBox = document.getElementById('countdown');
+    const cdDays = document.getElementById('cdDays');
+    const cdHours = document.getElementById('cdHours');
+    const cdMinutes = document.getElementById('cdMinutes');
+    const cdSeconds = document.getElementById('cdSeconds');
+
+    function edicaoAtual(agora) {
+      const ano = new Date(agora).getFullYear();
+      for (let deslocamento = 0; deslocamento <= 1; deslocamento++) {
+        const inicio = new Date(ano + deslocamento, MES_EVENTO, DIA_INICIO, HORA_ABERTURA, MINUTO_ABERTURA, 0);
+        const fim = new Date(ano + deslocamento, MES_EVENTO, DIA_FIM, 23, 59, 59, 999);
+        if (agora <= fim.getTime()) return { inicio: inicio.getTime() };
+      }
+    }
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function updateCountdown() {
+      const restante = edicaoAtual(Date.now()).inicio - Date.now();
+
+      if (restante <= 0) {
+        countdownBox.innerHTML = '<div class="countdown-started">O Linux Day começou! Aproveite os três dias de evento.</div>';
+        return;
+      }
+
+      cdDays.textContent = pad(Math.floor(restante / 86400000));
+      cdHours.textContent = pad(Math.floor((restante % 86400000) / 3600000));
+      cdMinutes.textContent = pad(Math.floor((restante % 3600000) / 60000));
+      cdSeconds.textContent = pad(Math.floor((restante % 60000) / 1000));
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  })();
+</script>
+</body>
+</html>

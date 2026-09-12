@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seu prêmio · Semana de Tecnologia</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; padding: 24px;
+    display: flex; align-items: center; justify-content: center;
+    background: oklch(0.15 0.012 260); color: oklch(0.96 0.005 260);
+    font-family: 'Work Sans', system-ui, sans-serif;
+  }
+  [hidden] { display: none !important; }
+
+  .card {
+    width: 100%; max-width: 420px; background: oklch(0.19 0.014 260);
+    border: 1px solid oklch(0.32 0.02 260); border-radius: 16px; padding: 40px 28px;
+    text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px;
+  }
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: oklch(0.78 0.19 152); }
+  h1 { margin: 4px 0 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 24px; }
+  .prize-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 21px; color: oklch(0.78 0.19 152); margin-top: 4px; }
+  .note { margin: 0; font-size: 13.5px; line-height: 1.55; color: oklch(0.65 0.02 260); }
+  .code { font-family: 'JetBrains Mono', monospace; color: oklch(0.90 0.01 260); word-break: break-all; }
+  .contact { color: oklch(0.78 0.19 152); font-weight: 600; }
+
+  .spinner { width: 30px; height: 30px; border-radius: 50%; border: 3px solid oklch(0.32 0.02 260); border-top-color: oklch(0.78 0.19 152); animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .icon { width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .icon.success { background: oklch(0.78 0.19 152 / 0.15); color: oklch(0.78 0.19 152); }
+  .icon.error { background: oklch(0.63 0.19 25 / 0.15); color: oklch(0.70 0.19 25); }
+</style>
+</head>
+<body>
+
+  <div class="card">
+
+    <div id="stateLoading">
+      <div class="spinner"></div>
+      <p class="note" style="margin-top: 16px;">Verificando seu código...</p>
+    </div>
+
+    <div id="stateSuccess" hidden style="display: flex; flex-direction: column; align-items: center; gap: 14px;">
+      <div class="icon success">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </div>
+      <span class="eyebrow">Parabéns!</span>
+      <h1>Você ganhou um prêmio</h1>
+      <div class="prize-name" id="prizeName"></div>
+      <p class="note">
+        Para resgatar, entre em contato com a organização e informe este código:<br>
+        <span class="code" id="prizeCode"></span>
+      </p>
+      <a class="contact" href="mailto:techuniplimeira@gmail.com">techuniplimeira@gmail.com</a>
+    </div>
+
+    <div id="stateError" hidden style="display: flex; flex-direction: column; align-items: center; gap: 14px;">
+      <div class="icon error">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg>
+      </div>
+      <span class="eyebrow">Ops</span>
+      <h1>Código inválido</h1>
+      <p class="note" id="errorMessage">Não encontramos um prêmio para este código. Confira se o QR Code foi escaneado corretamente ou fale com a organização.</p>
+    </div>
+
+  </div>
+
+<script>
+  // mesma URL do Web App do Apps Script usada no index.html (veja google-apps-script.gs)
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwguSUKwoxGXkdhhuIhbZgcVMHh3azj8pKMNJovy-1sHaFiQve3kqV8b-CFH-kY2yTf/exec';
+
+  const stateLoading = document.getElementById('stateLoading');
+  const stateSuccess = document.getElementById('stateSuccess');
+  const stateError = document.getElementById('stateError');
+
+  function showSuccess(premio, codigo) {
+    document.getElementById('prizeName').textContent = premio;
+    document.getElementById('prizeCode').textContent = codigo;
+    stateLoading.hidden = true;
+    stateSuccess.hidden = false;
+  }
+
+  function showError(mensagem) {
+    if (mensagem) document.getElementById('errorMessage').textContent = mensagem;
+    stateLoading.hidden = true;
+    stateError.hidden = false;
+  }
+
+  const ticket = new URLSearchParams(window.location.search).get('ticket');
+
+  if (!ticket) {
+    showError('Nenhum código informado. Escaneie o QR Code do seu cupom.');
+  } else {
+    fetch(`${SCRIPT_URL}?ticket=${encodeURIComponent(ticket)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.result === 'success') {
+          showSuccess(data.premio, ticket);
+        } else {
+          showError(data.message);
+        }
+      })
+      .catch(() => showError('Não foi possível verificar seu código agora. Tente novamente em instantes.'));
+  }
+</script>
+</body>
+</html>
