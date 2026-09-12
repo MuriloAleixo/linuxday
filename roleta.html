@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sorteio de prêmios · Semana de Tecnologia</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; padding: 40px 20px;
+    background: radial-gradient(circle at 50% -10%, oklch(0.22 0.03 152 / 0.35), oklch(0.15 0.012 260) 55%);
+    color: oklch(0.96 0.005 260);
+    font-family: 'Work Sans', system-ui, sans-serif;
+    display: flex; flex-direction: column; align-items: center; gap: 32px;
+  }
+  [hidden] { display: none !important; }
+  h1 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(26px, 5vw, 36px); text-align: center; }
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: oklch(0.78 0.19 152); }
+  .header { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+
+  /* tela de configuração do intervalo de números */
+  .setup-card {
+    width: 100%; max-width: 380px; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260);
+    border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 16px;
+  }
+  .setup-row { display: flex; gap: 12px; }
+  label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: oklch(0.70 0.02 260); flex: 1; }
+  input[type="number"] {
+    font-family: 'JetBrains Mono', monospace; font-size: 16px; color: oklch(0.96 0.005 260);
+    background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260); border-radius: 8px;
+    padding: 12px 14px; min-height: 44px; width: 100%;
+  }
+  input[type="number"]:focus { outline: none; border-color: oklch(0.78 0.19 152); }
+  .btn {
+    cursor: pointer; padding: 14px; border-radius: 10px; border: none; background: #31d17a;
+    color: oklch(0.12 0.01 260); font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 6px 18px oklch(0.78 0.19 152 / 0.3); }
+  .btn:disabled { cursor: not-allowed; background: oklch(0.32 0.02 260); color: oklch(0.55 0.02 260); }
+  .btn-ghost {
+    cursor: pointer; padding: 10px 18px; border-radius: 10px; border: 1px solid oklch(0.32 0.02 260);
+    background: transparent; color: oklch(0.65 0.02 260); font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px;
+  }
+  .btn-ghost:hover { border-color: oklch(0.55 0.19 25); color: oklch(0.68 0.19 25); }
+  .setup-note { margin: 0; font-size: 12.5px; line-height: 1.5; color: oklch(0.55 0.02 260); }
+  .setup-error { margin: 0; font-size: 13px; color: oklch(0.70 0.19 25); }
+
+  /* área principal do sorteio */
+  .draw-area { width: 100%; max-width: 460px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .progress { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: oklch(0.60 0.02 260); }
+
+  .wheel-wrap { position: relative; width: 300px; height: 300px; margin: 16px 0 6px; }
+
+  /* luzes tipo marquise ao redor da roleta */
+  .light {
+    position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; margin: -5px;
+    border-radius: 50%; background: oklch(0.32 0.02 260); transform-origin: center;
+    box-shadow: inset 0 0 2px rgba(0,0,0,0.5);
+    transition: background 0.1s ease, box-shadow 0.1s ease;
+  }
+  .light.on {
+    background: oklch(0.88 0.19 90);
+    box-shadow: 0 0 8px oklch(0.88 0.19 90), 0 0 18px oklch(0.88 0.19 90 / 0.7);
+  }
+
+  .pointer {
+    position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent;
+    border-top: 24px solid oklch(0.88 0.19 90); z-index: 3;
+    filter: drop-shadow(0 3px 4px rgba(0,0,0,0.5));
+  }
+
+  .wheel {
+    width: 100%; height: 100%; border-radius: 50%;
+    border: 8px solid oklch(0.32 0.02 260);
+    background:
+      radial-gradient(circle at 50% 42%, rgba(255,255,255,0.16), transparent 55%),
+      conic-gradient(
+        oklch(0.78 0.19 152) 0deg 30deg, oklch(0.19 0.014 260) 30deg 60deg,
+        oklch(0.60 0.13 280) 60deg 90deg, oklch(0.19 0.014 260) 90deg 120deg,
+        oklch(0.60 0.13 20) 120deg 150deg, oklch(0.19 0.014 260) 150deg 180deg,
+        oklch(0.60 0.13 200) 180deg 210deg, oklch(0.19 0.014 260) 210deg 240deg,
+        oklch(0.60 0.13 320) 240deg 270deg, oklch(0.19 0.014 260) 270deg 300deg,
+        oklch(0.60 0.13 70) 300deg 330deg, oklch(0.19 0.014 260) 330deg 360deg
+      );
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 0 0 2px rgba(255,255,255,0.06);
+    transition: transform 4.2s cubic-bezier(0.12, 0.85, 0.15, 1);
+  }
+  .wheel.spinning { animation: pulseGlow 0.6s ease-in-out infinite alternate; }
+  @keyframes pulseGlow {
+    from { box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 0 rgba(255,255,255,0); }
+    to { box-shadow: 0 16px 46px rgba(0,0,0,0.55), 0 0 26px oklch(0.78 0.19 152 / 0.5); }
+  }
+
+  .wheel-center {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 130px; height: 130px; border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, oklch(0.22 0.02 260), oklch(0.13 0.01 260));
+    border: 4px solid oklch(0.32 0.02 260); display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+  }
+  .wheel-center-value {
+    font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 32px; color: oklch(0.96 0.005 260);
+    display: inline-block;
+  }
+  .wheel-center-value.tick { animation: tickPulse 0.09s ease-out; }
+  @keyframes tickPulse { from { transform: scale(1.18); color: oklch(0.78 0.19 152); } to { transform: scale(1); color: oklch(0.96 0.005 260); } }
+  .wheel-center-value.landed { animation: landPop 0.5s cubic-bezier(0.2,1.4,0.4,1) both; color: oklch(0.78 0.19 152); font-size: 38px; }
+  @keyframes landPop { 0% { transform: scale(0.6); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+
+  .spin-btn { width: 100%; max-width: 260px; }
+
+  /* card de resultado revelado após o sorteio */
+  .result-card {
+    width: 100%; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.78 0.19 152 / 0.5);
+    border-radius: 16px; padding: 28px 24px; display: flex; flex-direction: column; align-items: center; gap: 12px;
+    box-shadow: 0 0 40px oklch(0.78 0.19 152 / 0.15);
+    animation: revealIn 0.5s cubic-bezier(0.2,1.2,0.3,1) both;
+  }
+  @keyframes revealIn { from { opacity: 0; transform: translateY(16px) scale(0.94); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .result-card img { width: 150px; height: 150px; object-fit: cover; border-radius: 12px; border: 1px solid oklch(0.32 0.02 260); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+  .result-number { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: oklch(0.60 0.02 260); }
+  .result-prize { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 24px; color: oklch(0.78 0.19 152); text-align: center; }
+
+  /* lista de prêmios já sorteados */
+  .history { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+  .history-title { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: oklch(0.55 0.02 260); }
+  .history-item {
+    display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px;
+    background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); font-size: 14px;
+  }
+  .history-item img { width: 32px; height: 32px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+  .history-item .num { font-family: 'JetBrains Mono', monospace; color: oklch(0.60 0.02 260); }
+
+  .finished-msg { text-align: center; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 18px; color: oklch(0.78 0.19 152); }
+
+  .footer-actions { display: flex; justify-content: center; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <span class="eyebrow">Semana de Tecnologia</span>
+    <h1>Sorteio de prêmios</h1>
+  </div>
+
+  <!-- tela 1: define o intervalo de números que participam do sorteio -->
+  <div class="setup-card" id="setupCard">
+    <div class="setup-row">
+      <label>Número inicial
+        <input type="number" id="rangeMin" value="1" min="0">
+      </label>
+      <label>Número final
+        <input type="number" id="rangeMax" placeholder="ex: 150">
+      </label>
+    </div>
+    <p class="setup-error" id="setupError" hidden></p>
+    <button class="btn" id="confirmRangeBtn">Definir intervalo e começar</button>
+    <p class="setup-note">São 7 prêmios no total. Cada número sorteado só pode sair uma vez.</p>
+  </div>
+
+  <!-- tela 2: roleta e sorteio -->
+  <div class="draw-area" id="drawArea" hidden>
+    <p class="progress" id="progressText"></p>
+
+    <div class="wheel-wrap">
+      <div id="wheelLights"></div>
+      <div class="pointer"></div>
+      <div class="wheel" id="wheel"></div>
+      <div class="wheel-center">
+        <span class="wheel-center-value" id="wheelCenter">--</span>
+      </div>
+    </div>
+
+    <button class="btn spin-btn" id="spinBtn">Girar roleta</button>
+
+    <div class="result-card" id="resultCard" hidden>
+      <img id="resultImg" src="" alt="">
+      <span class="result-number" id="resultNumber"></span>
+      <span class="result-prize" id="resultPrize"></span>
+    </div>
+
+    <p class="finished-msg" id="finishedMsg" hidden>Todos os prêmios já foram sorteados! 🎉</p>
+
+    <div class="history" id="history"></div>
+
+    <div class="footer-actions">
+      <button class="btn-ghost" id="resetBtn">Zerar roleta e recomeçar</button>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script>
+  // mesma URL do Web App do Apps Script usada no index.html e no premio.html
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwguSUKwoxGXkdhhuIhbZgcVMHh3azj8pKMNJovy-1sHaFiQve3kqV8b-CFH-kY2yTf/exec';
+
+  // prêmios do sorteio, em ordem de sorteio (imagens em img/premios/)
+  const PREMIOS = [
+    { nome: 'Mouse M90', imagem: 'img/premios/mouse-m90.jfif' },
+    { nome: 'Mouse óptico', imagem: 'img/premios/mouse-optico.jfif' },
+    { nome: 'Teclado', imagem: 'img/premios/teclado.jfif' },
+    { nome: 'Caixa de som', imagem: 'img/premios/caixa-de-som-1.jfif' },
+    { nome: 'Caixa de som', imagem: 'img/premios/caixa-de-som-2.jpeg' },
+    { nome: 'Garrafa', imagem: 'img/premios/garrafa.avif' },
+    { nome: 'Mousepad', imagem: 'img/premios/mousepad.webp' }
+  ];
+
+  const STORAGE_KEY = 'sorteioSemanaTecnologia';
+  const TOTAL_LUZES = 20;
+  const RAIO_LUZES = 154;
+
+  const setupCard = document.getElementById('setupCard');
+  const drawArea = document.getElementById('drawArea');
+  const rangeMinInput = document.getElementById('rangeMin');
+  const rangeMaxInput = document.getElementById('rangeMax');
+  const setupError = document.getElementById('setupError');
+  const confirmRangeBtn = document.getElementById('confirmRangeBtn');
+  const progressText = document.getElementById('progressText');
+  const wheel = document.getElementById('wheel');
+  const wheelCenter = document.getElementById('wheelCenter');
+  const wheelLightsBox = document.getElementById('wheelLights');
+  const spinBtn = document.getElementById('spinBtn');
+  const resultCard = document.getElementById('resultCard');
+  const resultImg = document.getElementById('resultImg');
+  const resultNumber = document.getElementById('resultNumber');
+  const resultPrize = document.getElementById('resultPrize');
+  const finishedMsg = document.getElementById('finishedMsg');
+  const historyBox = document.getElementById('history');
+  const resetBtn = document.getElementById('resetBtn');
+
+  let estado = carregarEstado();
+  let rotacaoAtual = 0;
+  let intervaloLuzes = null;
+
+  // monta as luzes ao redor da roleta uma única vez
+  const luzes = [];
+  for (let i = 0; i < TOTAL_LUZES; i++) {
+    const luz = document.createElement('div');
+    luz.className = 'light';
+    const angulo = (360 / TOTAL_LUZES) * i;
+    luz.style.transform = `rotate(${angulo}deg) translateY(-${RAIO_LUZES}px)`;
+    wheelLightsBox.appendChild(luz);
+    luzes.push(luz);
+  }
+
+  function iniciarLuzesChase() {
+    let ativo = 0;
+    intervaloLuzes = setInterval(() => {
+      luzes.forEach((l, idx) => {
+        l.classList.toggle('on', idx === ativo || idx === (ativo + TOTAL_LUZES / 2) % TOTAL_LUZES);
+      });
+      ativo = (ativo + 1) % TOTAL_LUZES;
+    }, 70);
+  }
+
+  function pararLuzesChase(acender) {
+    clearInterval(intervaloLuzes);
+    luzes.forEach((l) => l.classList.toggle('on', !!acender));
+  }
+
+  // pequeno acorde sintetizado via Web Audio, sem precisar de arquivo de som
+  function tocarSomVitoria() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [523.25, 659.25, 784.0, 1046.5].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        const start = ctx.currentTime + i * 0.1;
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.18, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.5);
+        osc.start(start);
+        osc.stop(start + 0.55);
+      });
+    } catch (err) { /* Web Audio indisponível nesse navegador, ignora */ }
+  }
+
+  function dispararConfete() {
+    if (typeof confetti !== 'function') return;
+    confetti({ particleCount: 120, spread: 90, startVelocity: 45, origin: { y: 0.5 } });
+    setTimeout(() => confetti({ particleCount: 60, spread: 120, origin: { y: 0.4 } }), 200);
+  }
+
+  function carregarEstado() {
+    try {
+      const salvo = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (salvo && typeof salvo.rangeMin === 'number' && typeof salvo.rangeMax === 'number') {
+        return salvo;
+      }
+    } catch (err) { /* estado corrompido, ignora e recomeça */ }
+    return null;
+  }
+
+  function salvarEstado() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
+  }
+
+  function numerosDisponiveis() {
+    const sorteados = new Set(estado.sorteios.map((s) => s.numero));
+    const disponiveis = [];
+    for (let n = estado.rangeMin; n <= estado.rangeMax; n++) {
+      if (!sorteados.has(n)) disponiveis.push(n);
+    }
+    return disponiveis;
+  }
+
+  function renderHistorico() {
+    historyBox.innerHTML = '';
+    if (estado.sorteios.length === 0) return;
+
+    const titulo = document.createElement('span');
+    titulo.className = 'history-title';
+    titulo.textContent = 'Prêmios sorteados';
+    historyBox.appendChild(titulo);
+
+    estado.sorteios.forEach((s) => {
+      const item = document.createElement('div');
+      item.className = 'history-item';
+      item.innerHTML = `
+        <img src="${s.imagem}" alt="">
+        <span class="num">Nº ${s.numero}</span>
+        <span>${s.premio}</span>
+      `;
+      historyBox.appendChild(item);
+    });
+  }
+
+  function renderProgresso() {
+    const total = PREMIOS.length;
+    const sorteadosCount = estado.sorteios.length;
+    progressText.textContent = `${sorteadosCount} de ${total} prêmios sorteados`;
+  }
+
+  function mostrarTelaSorteio() {
+    setupCard.hidden = true;
+    drawArea.hidden = false;
+    renderProgresso();
+    renderHistorico();
+    atualizarBotaoGirar();
+  }
+
+  function atualizarBotaoGirar() {
+    const acabouPremios = estado.sorteios.length >= PREMIOS.length;
+    const acabouNumeros = numerosDisponiveis().length === 0;
+
+    if (acabouPremios) {
+      spinBtn.hidden = true;
+      finishedMsg.hidden = false;
+      finishedMsg.textContent = 'Todos os prêmios já foram sorteados! 🎉';
+    } else if (acabouNumeros) {
+      spinBtn.hidden = true;
+      finishedMsg.hidden = false;
+      finishedMsg.textContent = 'Não há mais números disponíveis no intervalo definido.';
+    } else {
+      spinBtn.hidden = false;
+      finishedMsg.hidden = true;
+      spinBtn.disabled = false;
+    }
+  }
+
+  confirmRangeBtn.addEventListener('click', () => {
+    const min = parseInt(rangeMinInput.value, 10);
+    const max = parseInt(rangeMaxInput.value, 10);
+
+    if (Number.isNaN(min) || Number.isNaN(max) || max <= min) {
+      setupError.textContent = 'Informe um intervalo válido (número final maior que o inicial).';
+      setupError.hidden = false;
+      return;
+    }
+
+    const totalNumeros = max - min + 1;
+    if (totalNumeros < PREMIOS.length) {
+      setupError.textContent = `O intervalo precisa ter pelo menos ${PREMIOS.length} números (um pra cada prêmio).`;
+      setupError.hidden = false;
+      return;
+    }
+
+    setupError.hidden = true;
+    estado = { rangeMin: min, rangeMax: max, sorteios: [] };
+    salvarEstado();
+    mostrarTelaSorteio();
+  });
+
+  spinBtn.addEventListener('click', () => {
+    const disponiveis = numerosDisponiveis();
+    const premio = PREMIOS[estado.sorteios.length];
+    if (!premio || disponiveis.length === 0) return;
+
+    spinBtn.disabled = true;
+    resultCard.hidden = true;
+    wheel.classList.add('spinning');
+    iniciarLuzesChase();
+
+    const numeroSorteado = disponiveis[Math.floor(Math.random() * disponiveis.length)];
+
+    // gira a roleta (só decorativo) alguns giros completos + um ângulo aleatório,
+    // pra nunca parecer o mesmo giro duas vezes
+    rotacaoAtual += 1800 + Math.floor(Math.random() * 720);
+    wheel.style.transform = `rotate(${rotacaoAtual}deg)`;
+
+    // contador central: cicla números aleatórios do intervalo e desacelera até
+    // travar exatamente no número sorteado, sincronizado com o fim do giro da roleta
+    let atraso = 30;
+    const duracaoTotal = 4200;
+    const inicio = Date.now();
+
+    function tick() {
+      const decorrido = Date.now() - inicio;
+      if (decorrido >= duracaoTotal) {
+        wheelCenter.textContent = numeroSorteado;
+        wheelCenter.classList.remove('tick');
+        wheelCenter.classList.add('landed');
+        wheel.classList.remove('spinning');
+        pararLuzesChase(true);
+        finalizarSorteio(numeroSorteado, premio);
+        return;
+      }
+      const aleatorio = estado.rangeMin + Math.floor(Math.random() * (estado.rangeMax - estado.rangeMin + 1));
+      wheelCenter.textContent = aleatorio;
+      wheelCenter.classList.remove('tick');
+      void wheelCenter.offsetWidth; // força reflow pra reiniciar a animação de pulso
+      wheelCenter.classList.add('tick');
+      atraso = Math.min(atraso * 1.14, 320);
+      setTimeout(tick, atraso);
+    }
+    tick();
+  });
+
+  function finalizarSorteio(numero, premio) {
+    estado.sorteios.push({ numero, premio: premio.nome, imagem: premio.imagem });
+    salvarEstado();
+
+    resultImg.src = premio.imagem;
+    resultImg.alt = premio.nome;
+    resultNumber.textContent = `Número sorteado: ${numero}`;
+    resultPrize.textContent = premio.nome;
+    resultCard.hidden = false;
+
+    dispararConfete();
+    tocarSomVitoria();
+
+    renderProgresso();
+    renderHistorico();
+    atualizarBotaoGirar();
+    registrarNaPlanilha(numero, premio.nome);
+  }
+
+  // envia o resultado pra planilha do Google (mesmo Apps Script da inscrição e do
+  // premio.html). mode 'no-cors' porque o Apps Script não responde a preflight CORS;
+  // não dá pra confirmar o resultado aqui, mas o sorteio já ficou salvo localmente
+  // (localStorage) mesmo se a internet cair nesse momento.
+  function registrarNaPlanilha(numero, premio) {
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ tipo: 'sorteio', numero, premio })
+    }).catch((err) => console.error('Falha ao registrar sorteio na planilha', err));
+  }
+
+  resetBtn.addEventListener('click', () => {
+    if (!confirm('Isso vai apagar todos os prêmios já sorteados e começar um sorteio novo. Confirma?')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    estado = null;
+    rotacaoAtual = 0;
+    wheel.classList.remove('spinning');
+    wheel.style.transform = 'rotate(0deg)';
+    wheelCenter.textContent = '--';
+    wheelCenter.classList.remove('landed', 'tick');
+    pararLuzesChase(false);
+    resultCard.hidden = true;
+    drawArea.hidden = true;
+    setupCard.hidden = false;
+    rangeMinInput.value = 1;
+    rangeMaxInput.value = '';
+    setupError.hidden = true;
+  });
+
+  // se já existe um sorteio em andamento salvo (ex: página recarregada por engano), retoma
+  if (estado) {
+    rangeMinInput.value = estado.rangeMin;
+    rangeMaxInput.value = estado.rangeMax;
+    mostrarTelaSorteio();
+  }
+</script>
+</body>
+</html>
