@@ -44,6 +44,7 @@
   .btn:disabled { cursor: not-allowed; opacity: 0.35; box-shadow: none; }
   .btn-ghost { cursor: pointer; padding: 9px 16px; border-radius: 8px; border: 1px solid oklch(0.4 0.02 260); background: transparent; color: oklch(0.5 0.02 260); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
   .btn-ghost:hover { border-color: oklch(0.65 0.19 25); color: oklch(0.7 0.19 25); }
+  .btn-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
 
   /* janela de terminal, usada tanto na configuração quanto no sorteio */
   .term-window {
@@ -191,7 +192,10 @@
       </div>
     </div>
 
-    <button class="btn" id="spinBtn">./sortear.sh</button>
+    <div class="btn-row">
+      <button class="btn" id="spinBtn">./sortear.sh</button>
+      <button class="btn" id="redrawBtn" hidden>./resortear.sh</button>
+    </div>
     <p class="finished-msg" id="finishedMsg" hidden></p>
 
     <div class="footer-actions">
@@ -238,6 +242,7 @@
   const confirmRangeBtn = document.getElementById('confirmRangeBtn');
   const termBody = document.getElementById('termBody');
   const spinBtn = document.getElementById('spinBtn');
+  const redrawBtn = document.getElementById('redrawBtn');
   const resetBtn = document.getElementById('resetBtn');
   const finishedMsg = document.getElementById('finishedMsg');
   const resultOverlay = document.getElementById('resultOverlay');
@@ -331,6 +336,8 @@
   }
 
   function numerosDisponiveis() {
+    // números já chamados (válidos ou marcados como ausente) nunca voltam pro sorteio,
+    // pra um mesmo ticket nunca ser chamado duas vezes numa mesma sessão
     const usados = new Set(estado.sorteados.map((s) => s.numero));
     const disponiveis = [];
     for (let n = estado.rangeMin; n <= estado.rangeMax; n++) {
@@ -339,9 +346,16 @@
     return disponiveis;
   }
 
+  // conta só os sorteios que realmente entregaram um prêmio (ignora os marcados como
+  // "ausente", que foram substituídos por um resorteio) — é isso que define qual é o
+  // próximo prêmio da lista, não a quantidade total de sorteios já feitos
+  function premiosValidos() {
+    return estado.sorteados.filter((s) => s.premio && s.status !== 'ausente').length;
+  }
+
   function atualizarBotao() {
     const numerosLivres = numerosDisponiveis();
-    const acabouPremios = !estado.semPremio && estado.sorteados.length >= PREMIOS.length;
+    const acabouPremios = !estado.semPremio && premiosValidos() >= PREMIOS.length;
     const acabouNumeros = numerosLivres.length === 0;
     const acabou = acabouPremios || acabouNumeros;
 
@@ -350,6 +364,11 @@
     if (acabouPremios) finishedMsg.textContent = '> todos os prêmios já foram sorteados 🟢';
     else if (acabouNumeros) finishedMsg.textContent = '> todos os números do intervalo já foram sorteados 🟢';
     spinBtn.disabled = false;
+
+    // só dá pra resortear o último ticket chamado, e só se ele ainda não foi marcado ausente
+    const ultimo = estado.sorteados[estado.sorteados.length - 1];
+    redrawBtn.hidden = !ultimo || ultimo.status === 'ausente';
+    redrawBtn.disabled = redrawBtn.hidden || numerosLivres.length === 0;
   }
 
   function mostrarTelaSorteio() {
@@ -382,12 +401,15 @@
     mostrarTelaSorteio();
   });
 
-  spinBtn.addEventListener('click', async () => {
+  // sequência completa de um sorteio (animação + resultado); usada tanto pelo
+  // botão principal quanto pelo resorteio de um ticket marcado como ausente
+  async function realizarSorteio() {
     const numerosLivres = numerosDisponiveis();
     if (numerosLivres.length === 0) return;
-    if (!estado.semPremio && estado.sorteados.length >= PREMIOS.length) return;
+    if (!estado.semPremio && premiosValidos() >= PREMIOS.length) return;
 
     spinBtn.disabled = true;
+    redrawBtn.disabled = true;
     document.querySelector('.cursor')?.parentElement.remove();
 
     linha(estado.semPremio ? '$ ./sortear.sh --sem-premio' : '$ ./sortear.sh', 'prompt');
@@ -413,7 +435,7 @@
     }
 
     const numero = numerosLivres[Math.floor(Math.random() * numerosLivres.length)];
-    const premio = estado.semPremio ? null : PREMIOS[estado.sorteados.length];
+    const premio = estado.semPremio ? null : PREMIOS[premiosValidos()];
 
     scanLine.className = 'term-line hit';
     scanLine.textContent = premio
@@ -443,9 +465,9 @@
     }
     termBody.scrollTop = termBody.scrollHeight;
 
-    estado.sorteados.push({ numero, premio: premio ? premio.nome : null, imagem: premio ? premio.imagem : null });
+    estado.sorteados.push({ numero, premio: premio ? premio.nome : null, imagem: premio ? premio.imagem : null, status: 'valido' });
     salvarEstado();
-    registrarNaPlanilha(numero, premio ? premio.nome : 'Sem prêmio');
+    registrarNaPlanilha(numero, premio ? premio.nome : 'Sem prêmio', 'Válido');
 
     const novoPrompt = document.createElement('div');
     novoPrompt.className = 'term-line prompt';
@@ -456,18 +478,40 @@
     mostrarResultado(numero, premio);
 
     atualizarBotao();
+  }
+
+  spinBtn.addEventListener('click', realizarSorteio);
+
+  // "pessoa ausente": marca o último ticket chamado como não reivindicado (ele nunca mais
+  // é sorteado) e sorteia de novo pro MESMO prêmio, sem pular pro próximo da lista
+  redrawBtn.addEventListener('click', async () => {
+    const ultimo = estado.sorteados[estado.sorteados.length - 1];
+    if (!ultimo || ultimo.status === 'ausente') return;
+    if (numerosDisponiveis().length === 0) {
+      alert('Não há mais números disponíveis no intervalo pra resortear.');
+      return;
+    }
+
+    ultimo.status = 'ausente';
+    salvarEstado();
+    linha(`$ marcar --ausente ticket #${ultimo.numero}`, 'prompt');
+    linha(`> ticket #${ultimo.numero} não compareceu${ultimo.premio ? ` :: "${ultimo.premio}" liberado pra resorteio` : ''}`, 'dim');
+    registrarNaPlanilha(ultimo.numero, ultimo.premio || 'Sem prêmio', 'Ausente - resorteado');
+
+    await realizarSorteio();
   });
 
   // envia o resultado pra planilha do Google (mesmo Apps Script da inscrição). mode
   // 'no-cors' porque o Apps Script não responde a preflight CORS; não dá pra
   // confirmar o resultado aqui, mas o sorteio já ficou salvo localmente (localStorage)
-  // mesmo se a internet cair nesse momento.
-  function registrarNaPlanilha(numero, premio) {
+  // mesmo se a internet cair nesse momento. O "status" ('Válido' ou 'Ausente - resorteado')
+  // vira uma coluna própria na planilha, pra dar pra filtrar quem realmente levou o prêmio.
+  function registrarNaPlanilha(numero, premio, status) {
     fetch(SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ tipo: 'sorteio', numero, premio })
+      body: JSON.stringify({ tipo: 'sorteio', numero, premio, status: status || 'Válido' })
     }).catch((err) => console.error('Falha ao registrar sorteio na planilha', err));
   }
 
@@ -479,6 +523,8 @@
     finishedMsg.hidden = true;
     spinBtn.hidden = false;
     spinBtn.disabled = false;
+    redrawBtn.hidden = true;
+    redrawBtn.disabled = true;
     drawArea.hidden = true;
     setupWindow.hidden = false;
     rangeMinInput.value = 1;
