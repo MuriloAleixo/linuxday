@@ -3,458 +3,465 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sorteio de prêmios · Semana de Tecnologia</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap">
+<title>Sorteio de prêmios · Terminal</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
 <style>
   * { box-sizing: border-box; }
   body {
-    margin: 0; min-height: 100vh; padding: 40px 20px;
-    background: radial-gradient(circle at 50% -10%, oklch(0.22 0.03 152 / 0.35), oklch(0.15 0.012 260) 55%);
-    color: oklch(0.96 0.005 260);
-    font-family: 'Work Sans', system-ui, sans-serif;
-    display: flex; flex-direction: column; align-items: center; gap: 32px;
+    margin: 0; min-height: 100vh; padding: 48px 20px;
+    background: radial-gradient(circle at 50% 0%, oklch(0.28 0.08 200 / 0.2), transparent 55%), oklch(0.15 0.012 260);
+    color: oklch(0.82 0.16 200);
+    font-family: 'JetBrains Mono', monospace;
+    display: flex; flex-direction: column; align-items: center; gap: 26px;
   }
   [hidden] { display: none !important; }
-  h1 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(26px, 5vw, 36px); text-align: center; }
-  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: oklch(0.78 0.19 152); }
-  .header { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+  a { color: oklch(0.82 0.16 200); text-decoration: none; }
+  a:hover { color: oklch(0.88 0.14 200); }
+  .back-link { font-size: 12.5px; letter-spacing: 0.04em; align-self: flex-start; }
 
-  /* tela de configuração do intervalo de números */
-  .setup-card {
-    width: 100%; max-width: 380px; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260);
-    border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 16px;
+  /* tux decorativo, ancorado no canto inferior esquerdo da tela */
+  .tux-deco {
+    position: fixed; left: clamp(8px, 3vw, 50px); bottom: 0; width: clamp(220px, 24vw, 420px);
+    height: auto; pointer-events: none; z-index: 0;
+    filter: drop-shadow(0 0 30px oklch(0.82 0.16 200 / 0.25));
   }
-  .setup-row { display: flex; gap: 12px; }
-  label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: oklch(0.70 0.02 260); flex: 1; }
-  input[type="number"] {
-    font-family: 'JetBrains Mono', monospace; font-size: 16px; color: oklch(0.96 0.005 260);
-    background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260); border-radius: 8px;
-    padding: 12px 14px; min-height: 44px; width: 100%;
-  }
-  input[type="number"]:focus { outline: none; border-color: oklch(0.78 0.19 152); }
-  .btn {
-    cursor: pointer; padding: 14px; border-radius: 10px; border: none; background: #31d17a;
-    color: oklch(0.12 0.01 260); font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-  }
-  .btn:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 6px 18px oklch(0.78 0.19 152 / 0.3); }
-  .btn:disabled { cursor: not-allowed; background: oklch(0.32 0.02 260); color: oklch(0.55 0.02 260); }
-  .btn-ghost {
-    cursor: pointer; padding: 10px 18px; border-radius: 10px; border: 1px solid oklch(0.32 0.02 260);
-    background: transparent; color: oklch(0.65 0.02 260); font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px;
-  }
-  .btn-ghost:hover { border-color: oklch(0.55 0.19 25); color: oklch(0.68 0.19 25); }
-  .setup-note { margin: 0; font-size: 12.5px; line-height: 1.5; color: oklch(0.55 0.02 260); }
-  .setup-error { margin: 0; font-size: 13px; color: oklch(0.70 0.19 25); }
-
-  /* área principal do sorteio */
-  .draw-area { width: 100%; max-width: 460px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
-  .progress { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: oklch(0.60 0.02 260); }
-
-  .wheel-wrap { position: relative; width: 300px; height: 300px; margin: 16px 0 6px; }
-
-  /* luzes tipo marquise ao redor da roleta */
-  .light {
-    position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; margin: -5px;
-    border-radius: 50%; background: oklch(0.32 0.02 260); transform-origin: center;
-    box-shadow: inset 0 0 2px rgba(0,0,0,0.5);
-    transition: background 0.1s ease, box-shadow 0.1s ease;
-  }
-  .light.on {
-    background: oklch(0.88 0.19 90);
-    box-shadow: 0 0 8px oklch(0.88 0.19 90), 0 0 18px oklch(0.88 0.19 90 / 0.7);
+  @media (max-width: 1300px) {
+    .tux-deco { display: none; }
   }
 
-  .pointer {
-    position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-    width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent;
-    border-top: 24px solid oklch(0.88 0.19 90); z-index: 3;
-    filter: drop-shadow(0 3px 4px rgba(0,0,0,0.5));
+  /* selo com pontinho, igual ao badge usado no site principal */
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: oklch(0.82 0.16 200);
+    background: oklch(0.82 0.16 200 / 0.1); border: 1px solid oklch(0.82 0.16 200 / 0.4); text-transform: uppercase;
   }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: oklch(0.82 0.16 200); }
+  h1 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(22px, 5vw, 30px); text-align: center; color: oklch(0.96 0.005 260); text-transform: uppercase; letter-spacing: 0.02em; }
+  .header { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
 
-  .wheel {
-    width: 100%; height: 100%; border-radius: 50%;
-    border: 8px solid oklch(0.32 0.02 260);
-    background:
-      radial-gradient(circle at 50% 42%, rgba(255,255,255,0.16), transparent 55%),
-      conic-gradient(
-        oklch(0.78 0.19 152) 0deg 30deg, oklch(0.19 0.014 260) 30deg 60deg,
-        oklch(0.60 0.13 280) 60deg 90deg, oklch(0.19 0.014 260) 90deg 120deg,
-        oklch(0.60 0.13 20) 120deg 150deg, oklch(0.19 0.014 260) 150deg 180deg,
-        oklch(0.60 0.13 200) 180deg 210deg, oklch(0.19 0.014 260) 210deg 240deg,
-        oklch(0.60 0.13 320) 240deg 270deg, oklch(0.19 0.014 260) 270deg 300deg,
-        oklch(0.60 0.13 70) 300deg 330deg, oklch(0.19 0.014 260) 330deg 360deg
-      );
-    box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 0 0 2px rgba(255,255,255,0.06);
-    transition: transform 4.2s cubic-bezier(0.12, 0.85, 0.15, 1);
+  .btn { cursor: pointer; padding: 14px 30px; border-radius: 10px; border: none; background: #f5c518; color: oklch(0.12 0.01 260); font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.02em; box-shadow: 0 8px 22px oklch(0.84 0.16 85 / 0.2); transition: all 0.15s ease; }
+  .btn:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 10px 26px oklch(0.84 0.16 85 / 0.3); }
+  .btn:disabled { cursor: not-allowed; opacity: 0.35; box-shadow: none; }
+  .btn-ghost { cursor: pointer; padding: 9px 16px; border-radius: 8px; border: 1px solid oklch(0.4 0.02 260); background: transparent; color: oklch(0.5 0.02 260); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .btn-ghost:hover { border-color: oklch(0.65 0.19 25); color: oklch(0.7 0.19 25); }
+
+  /* janela de terminal, usada tanto na configuração quanto no sorteio */
+  .term-window {
+    width: min(94vw, 900px); border-radius: 14px; overflow: hidden; position: relative;
+    background: oklch(0.10 0.015 260); border: 1px solid oklch(0.82 0.16 200 / 0.35);
+    box-shadow: 0 30px 70px rgba(0,0,0,0.7), 0 0 60px oklch(0.82 0.16 200 / 0.12);
   }
-  .wheel.spinning { animation: pulseGlow 0.6s ease-in-out infinite alternate; }
-  @keyframes pulseGlow {
-    from { box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 0 rgba(255,255,255,0); }
-    to { box-shadow: 0 16px 46px rgba(0,0,0,0.55), 0 0 26px oklch(0.78 0.19 152 / 0.5); }
+  /* linha de brilho no topo, mesmo efeito de cor cambiante da faixa de contagem do site principal */
+  .term-window::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; z-index: 1;
+    background: linear-gradient(90deg, #2dd4ff, #7c5cff, #ff5cc8, #2dd4ff, #5ce1ff, #2dd4ff);
+    background-size: 300% 100%; animation: rgbFlow 8s linear infinite;
   }
-
-  .wheel-center {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 130px; height: 130px; border-radius: 50%;
-    background: radial-gradient(circle at 40% 35%, oklch(0.22 0.02 260), oklch(0.13 0.01 260));
-    border: 4px solid oklch(0.32 0.02 260); display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+  @keyframes rgbFlow { 0% { background-position: 0% 0; } 100% { background-position: 300% 0; } }
+  .term-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: oklch(0.12 0.01 260); border-bottom: 1px solid oklch(0.25 0.02 260); }
+  .term-dot { width: 11px; height: 11px; border-radius: 50%; }
+  .term-dot.red { background: #ff5f56; } .term-dot.yellow { background: #ffbd2e; } .term-dot.green { background: #27c93f; }
+  .term-title { margin-left: 8px; font-size: 12px; color: oklch(0.5 0.02 260); }
+  /* altura fixa (não min-height) pra tela de configuração e a de sorteio ficarem sempre do mesmo tamanho */
+  .term-body {
+    height: 520px; padding: 30px; font-size: 16.5px; line-height: 1.8; position: relative;
+    overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
+    scrollbar-width: thin; scrollbar-color: oklch(0.82 0.16 200 / 0.6) oklch(0.08 0.01 260);
   }
-  .wheel-center-value {
-    font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 32px; color: oklch(0.96 0.005 260);
-    display: inline-block;
+  .term-body::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, transparent 1px, transparent 2px);
   }
-  .wheel-center-value.tick { animation: tickPulse 0.09s ease-out; }
-  @keyframes tickPulse { from { transform: scale(1.18); color: oklch(0.78 0.19 152); } to { transform: scale(1); color: oklch(0.96 0.005 260); } }
-  .wheel-center-value.landed { animation: landPop 0.5s cubic-bezier(0.2,1.4,0.4,1) both; color: oklch(0.78 0.19 152); font-size: 38px; }
-  @keyframes landPop { 0% { transform: scale(0.6); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+  .term-body::-webkit-scrollbar { width: 8px; }
+  .term-body::-webkit-scrollbar-track { background: oklch(0.08 0.01 260); }
+  .term-body::-webkit-scrollbar-thumb { background: oklch(0.82 0.16 200 / 0.5); border-radius: 4px; }
+  .term-body::-webkit-scrollbar-thumb:hover { background: oklch(0.82 0.16 200 / 0.8); }
+  .term-line { white-space: pre-wrap; word-break: break-word; }
+  .term-line.dim { color: oklch(0.5 0.05 220); }
+  .term-line.prompt { color: oklch(0.65 0.02 260); }
+  .term-line.prompt .path { color: oklch(0.82 0.16 200); }
+  .term-line.scan { color: oklch(0.62 0.13 200); font-size: 12.5px; }
+  .term-line.hit { color: oklch(0.84 0.16 85); font-weight: 600; }
+  .cursor { display: inline-block; width: 8px; height: 15px; background: oklch(0.82 0.16 200); vertical-align: -2px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
 
-  .spin-btn { width: 100%; max-width: 260px; }
-
-  /* card de resultado revelado após o sorteio */
-  .result-card {
-    width: 100%; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.78 0.19 152 / 0.5);
-    border-radius: 16px; padding: 28px 24px; display: flex; flex-direction: column; align-items: center; gap: 12px;
-    box-shadow: 0 0 40px oklch(0.78 0.19 152 / 0.15);
-    animation: revealIn 0.5s cubic-bezier(0.2,1.2,0.3,1) both;
+  /* tela de configuração, dentro da própria janela de terminal */
+  .setup-body { display: flex; flex-direction: column; gap: 14px; }
+  .setup-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .setup-row label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: oklch(0.6 0.08 210); }
+  .setup-row input[type="number"] {
+    font-family: 'JetBrains Mono', monospace; font-size: 15px; color: oklch(0.88 0.14 200);
+    background: oklch(0.08 0.01 260); border: 1px solid oklch(0.5 0.14 200 / 0.5); border-radius: 8px;
+    padding: 9px 12px; width: 110px;
   }
-  @keyframes revealIn { from { opacity: 0; transform: translateY(16px) scale(0.94); } to { opacity: 1; transform: translateY(0) scale(1); } }
-  .result-card img { width: 150px; height: 150px; object-fit: cover; border-radius: 12px; border: 1px solid oklch(0.32 0.02 260); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
-  .result-number { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: oklch(0.60 0.02 260); }
-  .result-prize { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 24px; color: oklch(0.78 0.19 152); text-align: center; }
+  .setup-row input:focus { outline: none; border-color: oklch(0.82 0.16 200); }
+  .checkbox-row { display: flex; align-items: flex-start; gap: 10px; font-size: 12.5px; color: oklch(0.7 0.06 210); line-height: 1.4; cursor: pointer; }
+  .checkbox-row input { margin-top: 3px; accent-color: oklch(0.82 0.16 200); width: 16px; height: 16px; flex-shrink: 0; }
+  .setup-error { color: oklch(0.7 0.19 25); font-size: 12.5px; margin: 0; }
 
-  /* lista de prêmios já sorteados */
-  .history { width: 100%; display: flex; flex-direction: column; gap: 8px; }
-  .history-title { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: oklch(0.55 0.02 260); }
-  .history-item {
-    display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px;
-    background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); font-size: 14px;
+  .prize-block { margin-top: 10px; padding: 14px; border: 1px solid oklch(0.7 0.16 85 / 0.4); border-radius: 10px; background: oklch(0.84 0.16 85 / 0.08); display: flex; gap: 14px; align-items: center; animation: revealIn 0.4s ease both; }
+  .numero-block { margin-top: 10px; padding: 16px; border: 1px solid oklch(0.7 0.16 85 / 0.4); border-radius: 10px; background: oklch(0.84 0.16 85 / 0.08); animation: revealIn 0.4s ease both; }
+  @keyframes revealIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .prize-block img { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; border: 1px solid oklch(0.7 0.16 85 / 0.5); }
+  .prize-json, .numero-json { font-size: 12.5px; color: oklch(0.85 0.02 260); }
+  .prize-json .key, .numero-json .key { color: oklch(0.75 0.14 200); }
+  .prize-json .val, .numero-json .val { color: oklch(0.9 0.16 85); }
+  .numero-json .val { font-size: 20px; font-weight: 700; }
+
+  .finished-msg { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; color: oklch(0.84 0.16 85); text-align: center; }
+  .footer-actions { display: flex; justify-content: center; }
+
+  /* modal de resultado, exibido a cada sorteio */
+  .result-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.72);
+    align-items: center; justify-content: center; padding: 24px; z-index: 60;
   }
-  .history-item img { width: 32px; height: 32px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
-  .history-item .num { font-family: 'JetBrains Mono', monospace; color: oklch(0.60 0.02 260); }
-
-  .finished-msg { text-align: center; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 18px; color: oklch(0.78 0.19 152); }
-
-  .footer-actions { display: flex; justify-content: center; margin-top: 8px; }
+  .result-overlay.visible { display: flex; }
+  .result-modal {
+    position: relative; overflow: hidden; width: 100%; max-width: 480px;
+    background: oklch(0.10 0.015 260); border: 1px solid oklch(0.82 0.16 200 / 0.35); border-radius: 20px;
+    padding: 44px 36px 36px; display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 60px oklch(0.82 0.16 200 / 0.15);
+    animation: revealIn 0.35s cubic-bezier(0.2,0.7,0.2,1) both;
+  }
+  /* mesma linha de brilho cambiante usada nas janelas de terminal */
+  .result-modal::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, #2dd4ff, #7c5cff, #ff5cc8, #2dd4ff, #5ce1ff, #2dd4ff);
+    background-size: 300% 100%; animation: rgbFlow 8s linear infinite;
+  }
+  .result-close {
+    position: absolute; top: 10px; right: 10px; cursor: pointer; background: transparent; border: none;
+    color: oklch(0.55 0.02 260); font-size: 22px; line-height: 1; width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .result-close:hover { color: oklch(0.96 0.005 260); }
+  .result-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: oklch(0.82 0.16 200); text-shadow: 0 0 10px oklch(0.82 0.16 200 / 0.5); }
+  .result-number {
+    font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 84px; line-height: 1;
+    color: oklch(0.84 0.16 85); text-shadow: 0 0 10px oklch(0.84 0.16 85 / 0.8), 0 0 34px oklch(0.84 0.16 85 / 0.5);
+    font-variant-numeric: tabular-nums;
+  }
+  .result-image { width: 220px; height: 220px; object-fit: cover; border-radius: 16px; border: 1px solid oklch(0.7 0.16 85 / 0.5); margin-top: 6px; }
+  .result-prize-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 22px; color: oklch(0.96 0.005 260); }
+  .result-desc { margin: 0; font-size: 13.5px; line-height: 1.55; color: oklch(0.65 0.03 220); }
+  #resultCloseBtn { margin-top: 8px; }
 </style>
 </head>
 <body>
 
-  <div class="header">
-    <span class="eyebrow">Semana de Tecnologia</span>
-    <h1>Sorteio de prêmios</h1>
-  </div>
+  <img class="tux-deco" src="img/tux.png" alt="">
 
-  <!-- tela 1: define o intervalo de números que participam do sorteio -->
-  <div class="setup-card" id="setupCard">
-    <div class="setup-row">
-      <label>Número inicial
-        <input type="number" id="rangeMin" value="1" min="0">
-      </label>
-      <label>Número final
-        <input type="number" id="rangeMax" placeholder="ex: 150">
-      </label>
+  <a class="back-link" href="index.html">&larr; Semana de Tecnologia</a>
+
+  <!-- tela 1: escolhe o intervalo de números e o modo, dentro da janela de terminal -->
+  <div class="term-window" id="setupWindow">
+    <div class="term-bar">
+      <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+      <span class="term-title">sorteio@unip-informatica: ~</span>
     </div>
-    <p class="setup-error" id="setupError" hidden></p>
-    <button class="btn" id="confirmRangeBtn">Definir intervalo e começar</button>
-    <p class="setup-note">São 7 prêmios no total. Cada número sorteado só pode sair uma vez.</p>
+    <div class="term-body setup-body">
+      <div class="term-line prompt"><span class="path">unip@sorteio</span>:~$ config --intervalo</div>
+      <div class="setup-row">
+        <label>numero_inicial
+          <input type="number" id="rangeMin" value="1" min="0">
+        </label>
+        <label>numero_final
+          <input type="number" id="rangeMax" placeholder="ex: 150">
+        </label>
+      </div>
+      <label class="checkbox-row">
+        <input type="checkbox" id="semPremio">
+        <span>Sorteio sem prêmio (sorteia só o número — usar quando os 7 prêmios já acabaram, mas ainda quer sortear mais números)</span>
+      </label>
+      <p class="setup-error" id="setupError" hidden></p>
+      <button class="btn" id="confirmRangeBtn">iniciar sessão</button>
+    </div>
   </div>
 
-  <!-- tela 2: roleta e sorteio -->
-  <div class="draw-area" id="drawArea" hidden>
-    <p class="progress" id="progressText"></p>
-
-    <div class="wheel-wrap">
-      <div id="wheelLights"></div>
-      <div class="pointer"></div>
-      <div class="wheel" id="wheel"></div>
-      <div class="wheel-center">
-        <span class="wheel-center-value" id="wheelCenter">--</span>
+  <!-- tela 2: sorteio em si -->
+  <div id="drawArea" hidden style="display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%;">
+    <div class="term-window">
+      <div class="term-bar">
+        <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+        <span class="term-title">sorteio@unip-informatica: ~</span>
+      </div>
+      <div class="term-body" id="termBody">
+        <div class="term-line prompt"><span class="path">unip@sorteio</span>:~$ <span class="cursor"></span></div>
       </div>
     </div>
 
-    <button class="btn spin-btn" id="spinBtn">Girar roleta</button>
-
-    <div class="result-card" id="resultCard" hidden>
-      <img id="resultImg" src="" alt="">
-      <span class="result-number" id="resultNumber"></span>
-      <span class="result-prize" id="resultPrize"></span>
-    </div>
-
-    <p class="finished-msg" id="finishedMsg" hidden>Todos os prêmios já foram sorteados! 🎉</p>
-
-    <div class="history" id="history"></div>
+    <button class="btn" id="spinBtn">./sortear.sh</button>
+    <p class="finished-msg" id="finishedMsg" hidden></p>
 
     <div class="footer-actions">
-      <button class="btn-ghost" id="resetBtn">Zerar roleta e recomeçar</button>
+      <button class="btn-ghost" id="resetBtn">zerar sorteio</button>
+    </div>
+  </div>
+
+  <!-- modal de resultado: aparece a cada sorteio com o número e o prêmio ganho -->
+  <div class="result-overlay" id="resultOverlay">
+    <div class="result-modal">
+      <button class="result-close" id="resultClose" type="button" aria-label="Fechar">×</button>
+      <span class="result-eyebrow">&gt;_ Sorteio concluído</span>
+      <span class="result-number" id="resultNumero">000</span>
+      <img class="result-image" id="resultImg" src="" alt="" hidden>
+      <span class="result-prize-name" id="resultNome" hidden></span>
+      <p class="result-desc" id="resultDesc"></p>
+      <button class="btn" id="resultCloseBtn">continuar sorteio</button>
     </div>
   </div>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <script>
-  // mesma URL do Web App do Apps Script usada no index.html e no premio.html
+  // mesma URL do Web App do Apps Script usada no index.html
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwguSUKwoxGXkdhhuIhbZgcVMHh3azj8pKMNJovy-1sHaFiQve3kqV8b-CFH-kY2yTf/exec';
 
-  // prêmios do sorteio, em ordem de sorteio (imagens em img/premios/)
   const PREMIOS = [
-    { nome: 'Mouse M90', imagem: 'img/premios/mouse-m90.jfif' },
-    { nome: 'Mouse óptico', imagem: 'img/premios/mouse-optico.jfif' },
-    { nome: 'Teclado', imagem: 'img/premios/teclado.jfif' },
-    { nome: 'Caixa de som', imagem: 'img/premios/caixa-de-som-1.jfif' },
-    { nome: 'Caixa de som', imagem: 'img/premios/caixa-de-som-2.jpeg' },
-    { nome: 'Garrafa', imagem: 'img/premios/garrafa.avif' },
-    { nome: 'Mousepad', imagem: 'img/premios/mousepad.webp' }
+    { nome: 'Mouse M90', imagem: 'img/premios/mouse-m90.jfif', descricao: 'Mouse com fio, leve e preciso — ótimo para o dia a dia dos estudos.' },
+    { nome: 'Mouse óptico', imagem: 'img/premios/mouse-optico.jfif', descricao: 'Mouse óptico simples e confiável, ideal para quem quer praticidade.' },
+    { nome: 'Teclado', imagem: 'img/premios/teclado.jfif', descricao: 'Teclado completo, perfeito para produtividade e também para jogos.' },
+    { nome: 'Caixa de som', imagem: 'img/premios/caixa-de-som-1.jfif', descricao: 'Caixa de som compacta com bom alcance, ideal para o quarto ou a sala de estudos.' },
+    { nome: 'Caixa de som', imagem: 'img/premios/caixa-de-som-2.jpeg', descricao: 'Caixa de som portátil, leve para levar pra qualquer lugar.' },
+    { nome: 'Garrafa', imagem: 'img/premios/garrafa.avif', descricao: 'Garrafa térmica para manter sua bebida na temperatura certa durante as aulas.' },
+    { nome: 'Mousepad', imagem: 'img/premios/mousepad.webp', descricao: 'Mousepad emborrachado, superfície lisa para mais precisão no dia a dia.' }
   ];
+  const NOMES_FALSOS = ['MOUSE_X1', 'KIT_TECLADO', 'BOX_AUDIO', 'BOTTLE_V2', 'PAD_MAX', 'HEADSET', 'CABO_USB', 'FONTE_600W'];
+  const STORAGE_KEY = 'sorteioTerminalRoleta';
 
-  const STORAGE_KEY = 'sorteioSemanaTecnologia';
-  const TOTAL_LUZES = 20;
-  const RAIO_LUZES = 154;
-
-  const setupCard = document.getElementById('setupCard');
+  const setupWindow = document.getElementById('setupWindow');
   const drawArea = document.getElementById('drawArea');
   const rangeMinInput = document.getElementById('rangeMin');
   const rangeMaxInput = document.getElementById('rangeMax');
+  const semPremioInput = document.getElementById('semPremio');
   const setupError = document.getElementById('setupError');
   const confirmRangeBtn = document.getElementById('confirmRangeBtn');
-  const progressText = document.getElementById('progressText');
-  const wheel = document.getElementById('wheel');
-  const wheelCenter = document.getElementById('wheelCenter');
-  const wheelLightsBox = document.getElementById('wheelLights');
+  const termBody = document.getElementById('termBody');
   const spinBtn = document.getElementById('spinBtn');
-  const resultCard = document.getElementById('resultCard');
-  const resultImg = document.getElementById('resultImg');
-  const resultNumber = document.getElementById('resultNumber');
-  const resultPrize = document.getElementById('resultPrize');
-  const finishedMsg = document.getElementById('finishedMsg');
-  const historyBox = document.getElementById('history');
   const resetBtn = document.getElementById('resetBtn');
+  const finishedMsg = document.getElementById('finishedMsg');
+  const resultOverlay = document.getElementById('resultOverlay');
+  const resultClose = document.getElementById('resultClose');
+  const resultCloseBtn = document.getElementById('resultCloseBtn');
+  const resultNumero = document.getElementById('resultNumero');
+  const resultImg = document.getElementById('resultImg');
+  const resultNome = document.getElementById('resultNome');
+  const resultDesc = document.getElementById('resultDesc');
 
   let estado = carregarEstado();
-  let rotacaoAtual = 0;
-  let intervaloLuzes = null;
-
-  // monta as luzes ao redor da roleta uma única vez
-  const luzes = [];
-  for (let i = 0; i < TOTAL_LUZES; i++) {
-    const luz = document.createElement('div');
-    luz.className = 'light';
-    const angulo = (360 / TOTAL_LUZES) * i;
-    luz.style.transform = `rotate(${angulo}deg) translateY(-${RAIO_LUZES}px)`;
-    wheelLightsBox.appendChild(luz);
-    luzes.push(luz);
-  }
-
-  function iniciarLuzesChase() {
-    let ativo = 0;
-    intervaloLuzes = setInterval(() => {
-      luzes.forEach((l, idx) => {
-        l.classList.toggle('on', idx === ativo || idx === (ativo + TOTAL_LUZES / 2) % TOTAL_LUZES);
-      });
-      ativo = (ativo + 1) % TOTAL_LUZES;
-    }, 70);
-  }
-
-  function pararLuzesChase(acender) {
-    clearInterval(intervaloLuzes);
-    luzes.forEach((l) => l.classList.toggle('on', !!acender));
-  }
-
-  // pequeno acorde sintetizado via Web Audio, sem precisar de arquivo de som
-  function tocarSomVitoria() {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      [523.25, 659.25, 784.0, 1046.5].forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.value = freq;
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        const start = ctx.currentTime + i * 0.1;
-        gain.gain.setValueAtTime(0.0001, start);
-        gain.gain.exponentialRampToValueAtTime(0.18, start + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.5);
-        osc.start(start);
-        osc.stop(start + 0.55);
-      });
-    } catch (err) { /* Web Audio indisponível nesse navegador, ignora */ }
-  }
-
-  function dispararConfete() {
-    if (typeof confetti !== 'function') return;
-    confetti({ particleCount: 120, spread: 90, startVelocity: 45, origin: { y: 0.5 } });
-    setTimeout(() => confetti({ particleCount: 60, spread: 120, origin: { y: 0.4 } }), 200);
-  }
 
   function carregarEstado() {
     try {
       const salvo = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (salvo && typeof salvo.rangeMin === 'number' && typeof salvo.rangeMax === 'number') {
+      if (salvo && typeof salvo.rangeMin === 'number' && typeof salvo.rangeMax === 'number' && Array.isArray(salvo.sorteados)) {
         return salvo;
       }
     } catch (err) { /* estado corrompido, ignora e recomeça */ }
     return null;
   }
+  function salvarEstado() { localStorage.setItem(STORAGE_KEY, JSON.stringify(estado)); }
 
-  function salvarEstado() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
+  function tocarBip(freq = 880, dur = 0.06) {
+    try {
+      const ctx = tocarBip.ctx || (tocarBip.ctx = new (window.AudioContext || window.webkitAudioContext)());
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.value = freq;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      gain.gain.setValueAtTime(0.04, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+      osc.start();
+      osc.stop(ctx.currentTime + dur + 0.02);
+    } catch (err) { /* ignora */ }
+  }
+  function tocarSomVitoria() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [659.25, 880, 1174.7].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = freq;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        const start = ctx.currentTime + i * 0.09;
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.12, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.3);
+        osc.start(start);
+        osc.stop(start + 0.32);
+      });
+    } catch (err) { /* ignora */ }
+  }
+  function dispararConfete() {
+    if (typeof confetti === 'function') confetti({ particleCount: 90, spread: 80, startVelocity: 40, origin: { y: 0.4 }, colors: ['#f5c518', '#5ce1ff', '#ffffff'] });
+  }
+
+  // mostra o modal de resultado com o número sorteado e, se houver, a imagem + descrição do prêmio
+  function mostrarResultado(numero, premio) {
+    resultNumero.textContent = String(numero).padStart(3, '0');
+    if (premio) {
+      resultImg.src = premio.imagem;
+      resultImg.alt = premio.nome;
+      resultImg.hidden = false;
+      resultNome.textContent = premio.nome;
+      resultNome.hidden = false;
+      resultDesc.textContent = premio.descricao || '';
+    } else {
+      resultImg.hidden = true;
+      resultNome.hidden = true;
+      resultDesc.textContent = 'Número sorteado — sem prêmio associado.';
+    }
+    resultOverlay.classList.add('visible');
+  }
+  function fecharResultado() { resultOverlay.classList.remove('visible'); }
+  resultClose.addEventListener('click', fecharResultado);
+  resultCloseBtn.addEventListener('click', fecharResultado);
+  resultOverlay.addEventListener('click', (event) => { if (event.target === resultOverlay) fecharResultado(); });
+
+  function linha(texto, classe) {
+    const el = document.createElement('div');
+    el.className = `term-line ${classe || ''}`;
+    el.textContent = texto;
+    termBody.appendChild(el);
+    termBody.scrollTop = termBody.scrollHeight;
+    return el;
   }
 
   function numerosDisponiveis() {
-    const sorteados = new Set(estado.sorteios.map((s) => s.numero));
+    const usados = new Set(estado.sorteados.map((s) => s.numero));
     const disponiveis = [];
     for (let n = estado.rangeMin; n <= estado.rangeMax; n++) {
-      if (!sorteados.has(n)) disponiveis.push(n);
+      if (!usados.has(n)) disponiveis.push(n);
     }
     return disponiveis;
   }
 
-  function renderHistorico() {
-    historyBox.innerHTML = '';
-    if (estado.sorteios.length === 0) return;
+  function atualizarBotao() {
+    const numerosLivres = numerosDisponiveis();
+    const acabouPremios = !estado.semPremio && estado.sorteados.length >= PREMIOS.length;
+    const acabouNumeros = numerosLivres.length === 0;
+    const acabou = acabouPremios || acabouNumeros;
 
-    const titulo = document.createElement('span');
-    titulo.className = 'history-title';
-    titulo.textContent = 'Prêmios sorteados';
-    historyBox.appendChild(titulo);
-
-    estado.sorteios.forEach((s) => {
-      const item = document.createElement('div');
-      item.className = 'history-item';
-      item.innerHTML = `
-        <img src="${s.imagem}" alt="">
-        <span class="num">Nº ${s.numero}</span>
-        <span>${s.premio}</span>
-      `;
-      historyBox.appendChild(item);
-    });
-  }
-
-  function renderProgresso() {
-    const total = PREMIOS.length;
-    const sorteadosCount = estado.sorteios.length;
-    progressText.textContent = `${sorteadosCount} de ${total} prêmios sorteados`;
+    spinBtn.hidden = acabou;
+    finishedMsg.hidden = !acabou;
+    if (acabouPremios) finishedMsg.textContent = '> todos os prêmios já foram sorteados 🟢';
+    else if (acabouNumeros) finishedMsg.textContent = '> todos os números do intervalo já foram sorteados 🟢';
+    spinBtn.disabled = false;
   }
 
   function mostrarTelaSorteio() {
-    setupCard.hidden = true;
+    setupWindow.hidden = true;
     drawArea.hidden = false;
-    renderProgresso();
-    renderHistorico();
-    atualizarBotaoGirar();
+    atualizarBotao();
   }
 
-  function atualizarBotaoGirar() {
-    const acabouPremios = estado.sorteios.length >= PREMIOS.length;
-    const acabouNumeros = numerosDisponiveis().length === 0;
-
-    if (acabouPremios) {
-      spinBtn.hidden = true;
-      finishedMsg.hidden = false;
-      finishedMsg.textContent = 'Todos os prêmios já foram sorteados! 🎉';
-    } else if (acabouNumeros) {
-      spinBtn.hidden = true;
-      finishedMsg.hidden = false;
-      finishedMsg.textContent = 'Não há mais números disponíveis no intervalo definido.';
-    } else {
-      spinBtn.hidden = false;
-      finishedMsg.hidden = true;
-      spinBtn.disabled = false;
-    }
-  }
+  function aguardar(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
   confirmRangeBtn.addEventListener('click', () => {
     const min = parseInt(rangeMinInput.value, 10);
     const max = parseInt(rangeMaxInput.value, 10);
+    const semPremio = semPremioInput.checked;
 
     if (Number.isNaN(min) || Number.isNaN(max) || max <= min) {
-      setupError.textContent = 'Informe um intervalo válido (número final maior que o inicial).';
+      setupError.textContent = 'erro: informe um intervalo válido (final maior que o inicial)';
       setupError.hidden = false;
       return;
     }
-
-    const totalNumeros = max - min + 1;
-    if (totalNumeros < PREMIOS.length) {
-      setupError.textContent = `O intervalo precisa ter pelo menos ${PREMIOS.length} números (um pra cada prêmio).`;
+    if (!semPremio && (max - min + 1) < PREMIOS.length) {
+      setupError.textContent = `erro: o intervalo precisa ter pelo menos ${PREMIOS.length} números (um pra cada prêmio), ou marque "sorteio sem prêmio"`;
       setupError.hidden = false;
       return;
     }
 
     setupError.hidden = true;
-    estado = { rangeMin: min, rangeMax: max, sorteios: [] };
+    estado = { rangeMin: min, rangeMax: max, semPremio, sorteados: [] };
     salvarEstado();
     mostrarTelaSorteio();
   });
 
-  spinBtn.addEventListener('click', () => {
-    const disponiveis = numerosDisponiveis();
-    const premio = PREMIOS[estado.sorteios.length];
-    if (!premio || disponiveis.length === 0) return;
+  spinBtn.addEventListener('click', async () => {
+    const numerosLivres = numerosDisponiveis();
+    if (numerosLivres.length === 0) return;
+    if (!estado.semPremio && estado.sorteados.length >= PREMIOS.length) return;
 
     spinBtn.disabled = true;
-    resultCard.hidden = true;
-    wheel.classList.add('spinning');
-    iniciarLuzesChase();
+    document.querySelector('.cursor')?.parentElement.remove();
 
-    const numeroSorteado = disponiveis[Math.floor(Math.random() * disponiveis.length)];
+    linha(estado.semPremio ? '$ ./sortear.sh --sem-premio' : '$ ./sortear.sh', 'prompt');
+    await aguardar(150);
+    linha(`Números já sorteados: [${estado.sorteados.map((s) => s.numero).join(', ') || 'nenhum'}]`, 'dim');
+    await aguardar(200);
 
-    // gira a roleta (só decorativo) alguns giros completos + um ângulo aleatório,
-    // pra nunca parecer o mesmo giro duas vezes
-    rotacaoAtual += 1800 + Math.floor(Math.random() * 720);
-    wheel.style.transform = `rotate(${rotacaoAtual}deg)`;
-
-    // contador central: cicla números aleatórios do intervalo e desacelera até
-    // travar exatamente no número sorteado, sincronizado com o fim do giro da roleta
-    let atraso = 30;
-    const duracaoTotal = 4200;
+    const scanLine = linha(estado.semPremio ? 'escaneando números disponíveis...' : 'escaneando candidatos...', 'scan');
     const inicio = Date.now();
-
-    function tick() {
-      const decorrido = Date.now() - inicio;
-      if (decorrido >= duracaoTotal) {
-        wheelCenter.textContent = numeroSorteado;
-        wheelCenter.classList.remove('tick');
-        wheelCenter.classList.add('landed');
-        wheel.classList.remove('spinning');
-        pararLuzesChase(true);
-        finalizarSorteio(numeroSorteado, premio);
-        return;
+    let atraso = 35;
+    while (Date.now() - inicio < 1800) {
+      if (estado.semPremio) {
+        const candidato = estado.rangeMin + Math.floor(Math.random() * (estado.rangeMax - estado.rangeMin + 1));
+        scanLine.textContent = `> testando ticket #${candidato}...`;
+      } else {
+        const fake = NOMES_FALSOS[Math.floor(Math.random() * NOMES_FALSOS.length)];
+        const hex = Math.random().toString(16).slice(2, 8);
+        scanLine.textContent = `> candidato #${hex} :: ${fake} :: checando disponibilidade...`;
       }
-      const aleatorio = estado.rangeMin + Math.floor(Math.random() * (estado.rangeMax - estado.rangeMin + 1));
-      wheelCenter.textContent = aleatorio;
-      wheelCenter.classList.remove('tick');
-      void wheelCenter.offsetWidth; // força reflow pra reiniciar a animação de pulso
-      wheelCenter.classList.add('tick');
-      atraso = Math.min(atraso * 1.14, 320);
-      setTimeout(tick, atraso);
+      tocarBip(600 + Math.random() * 400, 0.02);
+      atraso = Math.min(atraso * 1.08, 140);
+      await aguardar(atraso);
     }
-    tick();
+
+    const numero = numerosLivres[Math.floor(Math.random() * numerosLivres.length)];
+    const premio = estado.semPremio ? null : PREMIOS[estado.sorteados.length];
+
+    scanLine.className = 'term-line hit';
+    scanLine.textContent = premio
+      ? `> MATCH encontrado :: ticket #${numero} :: ${premio.nome.toUpperCase()}`
+      : `> MATCH encontrado :: ticket #${numero}`;
+    tocarSomVitoria();
+    if (premio) dispararConfete();
+    await aguardar(150);
+
+    if (premio) {
+      linha('$ cat premio_sorteado.json', 'prompt');
+      const bloco = document.createElement('div');
+      bloco.className = 'prize-block';
+      bloco.innerHTML = `
+        <img src="${premio.imagem}" alt="">
+        <div class="prize-json">
+          {<br>&nbsp;&nbsp;<span class="key">"numero"</span>: <span class="val">${numero}</span>,<br>&nbsp;&nbsp;<span class="key">"premio"</span>: <span class="val">"${premio.nome}"</span><br>}
+        </div>
+      `;
+      termBody.appendChild(bloco);
+    } else {
+      linha('$ cat numero_sorteado.json', 'prompt');
+      const bloco = document.createElement('div');
+      bloco.className = 'numero-block';
+      bloco.innerHTML = `<div class="numero-json">{<br>&nbsp;&nbsp;<span class="key">"numero"</span>: <span class="val">${numero}</span><br>}</div>`;
+      termBody.appendChild(bloco);
+    }
+    termBody.scrollTop = termBody.scrollHeight;
+
+    estado.sorteados.push({ numero, premio: premio ? premio.nome : null, imagem: premio ? premio.imagem : null });
+    salvarEstado();
+    registrarNaPlanilha(numero, premio ? premio.nome : 'Sem prêmio');
+
+    const novoPrompt = document.createElement('div');
+    novoPrompt.className = 'term-line prompt';
+    novoPrompt.innerHTML = `<span class="path">unip@sorteio</span>:~$ <span class="cursor"></span>`;
+    termBody.appendChild(novoPrompt);
+    termBody.scrollTop = termBody.scrollHeight;
+
+    mostrarResultado(numero, premio);
+
+    atualizarBotao();
   });
 
-  function finalizarSorteio(numero, premio) {
-    estado.sorteios.push({ numero, premio: premio.nome, imagem: premio.imagem });
-    salvarEstado();
-
-    resultImg.src = premio.imagem;
-    resultImg.alt = premio.nome;
-    resultNumber.textContent = `Número sorteado: ${numero}`;
-    resultPrize.textContent = premio.nome;
-    resultCard.hidden = false;
-
-    dispararConfete();
-    tocarSomVitoria();
-
-    renderProgresso();
-    renderHistorico();
-    atualizarBotaoGirar();
-    registrarNaPlanilha(numero, premio.nome);
-  }
-
-  // envia o resultado pra planilha do Google (mesmo Apps Script da inscrição e do
-  // premio.html). mode 'no-cors' porque o Apps Script não responde a preflight CORS;
-  // não dá pra confirmar o resultado aqui, mas o sorteio já ficou salvo localmente
-  // (localStorage) mesmo se a internet cair nesse momento.
+  // envia o resultado pra planilha do Google (mesmo Apps Script da inscrição). mode
+  // 'no-cors' porque o Apps Script não responde a preflight CORS; não dá pra
+  // confirmar o resultado aqui, mas o sorteio já ficou salvo localmente (localStorage)
+  // mesmo se a internet cair nesse momento.
   function registrarNaPlanilha(numero, premio) {
     fetch(SCRIPT_URL, {
       method: 'POST',
@@ -465,27 +472,25 @@
   }
 
   resetBtn.addEventListener('click', () => {
-    if (!confirm('Isso vai apagar todos os prêmios já sorteados e começar um sorteio novo. Confirma?')) return;
+    if (!confirm('Isso vai apagar todos os prêmios/números já sorteados e voltar pra tela de configuração. Confirma?')) return;
     localStorage.removeItem(STORAGE_KEY);
     estado = null;
-    rotacaoAtual = 0;
-    wheel.classList.remove('spinning');
-    wheel.style.transform = 'rotate(0deg)';
-    wheelCenter.textContent = '--';
-    wheelCenter.classList.remove('landed', 'tick');
-    pararLuzesChase(false);
-    resultCard.hidden = true;
+    termBody.innerHTML = '<div class="term-line prompt"><span class="path">unip@sorteio</span>:~$ <span class="cursor"></span></div>';
+    finishedMsg.hidden = true;
+    spinBtn.hidden = false;
+    spinBtn.disabled = false;
     drawArea.hidden = true;
-    setupCard.hidden = false;
+    setupWindow.hidden = false;
     rangeMinInput.value = 1;
     rangeMaxInput.value = '';
+    semPremioInput.checked = false;
     setupError.hidden = true;
   });
 
-  // se já existe um sorteio em andamento salvo (ex: página recarregada por engano), retoma
   if (estado) {
     rangeMinInput.value = estado.rangeMin;
     rangeMaxInput.value = estado.rangeMax;
+    semPremioInput.checked = !!estado.semPremio;
     mostrarTelaSorteio();
   }
 </script>

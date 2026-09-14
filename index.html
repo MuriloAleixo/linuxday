@@ -4,18 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Semana de Tecnologia</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@600;700&family=Space+Grotesk:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap">
 <style>
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
     margin: 0;
     background: oklch(0.15 0.012 260);
     color: oklch(0.96 0.005 260);
     font-family: 'Work Sans', system-ui, sans-serif;
   }
-  ::selection { background: oklch(0.78 0.19 152 / 0.35); }
-  a { color: oklch(0.78 0.19 152); text-decoration: none; }
-  a:hover { color: oklch(0.86 0.19 152); }
+  ::selection { background: oklch(0.84 0.16 85 / 0.35); }
+  a { color: oklch(0.84 0.16 85); text-decoration: none; }
+  a:hover { color: oklch(0.90 0.16 85); }
 
   /* animação de entrada da seção de empresas quando o dia 28 é marcado */
   @keyframes revealIn {
@@ -26,41 +27,117 @@
 
   .wrap { min-height: 100vh; position: relative; overflow: hidden; }
 
-  /* topo da página: nome do evento e as datas */
-  .hero { position: relative; padding: 96px 24px 120px; overflow: hidden; border-bottom: 1px solid oklch(0.32 0.02 260 / 0.5); }
-  .hero-dots { position: absolute; inset: 0; background-image: radial-gradient(oklch(0.4 0.02 260 / 0.6) 1px, transparent 1px); background-size: 28px 28px; opacity: 0.5; }
-  .hero-glow { position: absolute; top: -180px; left: 50%; transform: translateX(-50%); width: 720px; height: 420px; background: radial-gradient(oklch(0.78 0.19 152 / 0.22), transparent 70%); filter: blur(10px); }
-  .hero-inner { position: relative; max-width: 880px; margin: 0 auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-  .badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border: 1px solid oklch(0.32 0.02 260); border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: oklch(0.78 0.19 152); background: oklch(0.19 0.014 260); }
-  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: oklch(0.78 0.19 152); }
-  h1 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(34px, 9vw, 68px); line-height: 1.08; letter-spacing: -0.02em; text-wrap: pretty; }
-  .subtitle { margin: 0; max-width: 560px; font-size: clamp(15px, 4vw, 18px); line-height: 1.55; color: oklch(0.70 0.02 260); text-wrap: pretty; }
-  .pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
-  .pill { padding: 8px 16px; border-radius: 8px; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); color: oklch(0.86 0.02 260); }
-  .place { margin-top: 4px; font-size: 13px; color: oklch(0.55 0.02 260); }
+  /* topo da página: a cena do evento como fundo, com o texto pousado na área escura do "chão", abaixo da linha luminosa da arte */
+  .hero {
+    position: relative; overflow: hidden; width: 100%; min-height: 560px;
+    background-image: url('img/vertical_limpo.png');
+    background-size: cover; background-position: center 62%;
+    display: flex; align-items: flex-end; justify-content: center;
+    padding: 24px 24px 48px;
+  }
+  /* escurece só a base da imagem pra garantir contraste do texto e suavizar a transição pra faixa amarela */
+  .hero::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, transparent 38%, oklch(0.08 0.02 265 / 0.55) 64%, oklch(0.08 0.02 265 / 0.88) 100%);
+  }
 
-  /* contagem regressiva até a abertura do evento */
-  .countdown { display: flex; justify-content: center; gap: 14px; margin-top: 4px; flex-wrap: wrap; }
-  .countdown-unit { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 68px; padding: 12px 10px; border-radius: 10px; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); }
-  .countdown-value { font-family: 'JetBrains Mono', monospace; font-size: clamp(22px, 5vw, 30px); font-weight: 600; color: oklch(0.78 0.19 152); line-height: 1; }
-  .countdown-unit-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: oklch(0.55 0.02 260); }
-  .countdown-started { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: oklch(0.78 0.19 152); }
+  /* botão fixo no canto da hero que leva direto pra seleção de dias */
+  .hero-cta-btn {
+    position: absolute; top: 20px; right: 20px; z-index: 2;
+    padding: 12px 22px; border-radius: 999px; background: #f5c518; color: oklch(0.12 0.01 260);
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.4); transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .hero-cta-btn:hover { color: oklch(0.12 0.01 260); transform: translateY(-1px); box-shadow: 0 10px 26px rgba(0,0,0,0.45); }
+
+  /* bloco de texto pousado sobre a imagem, centralizado na parte inferior */
+  .hero-lede {
+    position: relative; z-index: 1;
+    max-width: 720px; margin: 0 auto;
+    text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: oklch(0.90 0.16 85);
+    background: oklch(0.13 0.02 265 / 0.6); border: 1px solid oklch(0.84 0.16 85 / 0.4); backdrop-filter: blur(6px);
+  }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: oklch(0.84 0.16 85); }
+  h1 {
+    margin: 0; font-family: 'Anton', 'Space Grotesk', sans-serif; font-weight: 400; text-transform: uppercase;
+    font-size: clamp(28px, 6vw, 44px); line-height: 1.05; letter-spacing: 0.01em; text-wrap: pretty;
+    color: white; text-shadow: 0 3px 14px rgba(0,0,0,0.6);
+  }
+  h1 .brand-day {
+    display: block; font-family: 'Caveat', cursive; font-weight: 700; color: oklch(0.84 0.16 85);
+    font-size: 1.35em; line-height: 0.95; margin-top: 2px; text-shadow: 0 3px 12px rgba(0,0,0,0.5);
+  }
+  .subtitle { margin: 0; max-width: 560px; font-size: clamp(15px, 4vw, 17px); line-height: 1.55; color: oklch(0.92 0.01 260); text-wrap: pretty; text-shadow: 0 2px 8px rgba(0,0,0,0.55); }
+  .pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  .pill { padding: 8px 16px; border-radius: 8px; background: oklch(0.13 0.02 265 / 0.65); border: 1px solid oklch(0.84 0.16 85 / 0.3); color: oklch(0.92 0.02 260); backdrop-filter: blur(6px); }
+  .place { font-size: 13px; letter-spacing: 0.02em; color: oklch(0.85 0.02 260); text-shadow: 0 2px 6px rgba(0,0,0,0.5); }
+
+  /* faixa de contagem regressiva em largura total: cor neon da cidade futurista da arte, visual cibernético */
+  .countdown-band {
+    width: 100%; position: relative; overflow: hidden;
+    background: linear-gradient(180deg, oklch(0.17 0.03 255), oklch(0.12 0.03 260));
+  }
+  /* linhas de brilho no topo e na base, com o mesmo degradê de cor cambiante (tipo rgb) visto na linha neon da arte */
+  .countdown-band::before, .countdown-band::after {
+    content: ''; position: absolute; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, #2dd4ff, #7c5cff, #ff5cc8, #2dd4ff, #5ce1ff, #2dd4ff);
+    background-size: 300% 100%;
+    box-shadow: 0 0 14px 2px rgba(80, 190, 255, 0.55);
+    animation: rgbFlow 8s linear infinite;
+  }
+  .countdown-band::before { top: 0; }
+  .countdown-band::after { bottom: 0; }
+  @keyframes rgbFlow { 0% { background-position: 0% 0; } 100% { background-position: 300% 0; } }
+  .countdown-band-inner {
+    max-width: 1100px; margin: 0 auto; padding: 10px 24px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 6px; text-align: center;
+  }
+  .countdown-label {
+    font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: oklch(0.82 0.16 200); text-shadow: 0 0 10px oklch(0.82 0.16 200 / 0.5);
+  }
+  .countdown-label::after {
+    content: '_'; margin-left: 2px; animation: blinkCursor 1s step-end infinite;
+  }
+  @keyframes blinkCursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  .countdown { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; }
+  .countdown-unit {
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 52px;
+    padding: 6px 10px; border-radius: 8px;
+    background: oklch(0.08 0.02 260 / 0.55); border: 1px solid oklch(0.82 0.16 200 / 0.3);
+  }
+  .countdown-unit:not(:last-child)::after {
+    content: ':'; position: absolute; top: 4px; right: -15px;
+    font-family: 'JetBrains Mono', monospace; font-size: clamp(28px, 5.5vw, 44px); font-weight: 600;
+    color: oklch(0.82 0.16 200 / 0.5); text-shadow: 0 0 8px oklch(0.82 0.16 200 / 0.6);
+  }
+  .countdown-value {
+    font-family: 'JetBrains Mono', monospace; font-size: clamp(28px, 5.5vw, 44px); font-weight: 700; line-height: 1;
+    color: oklch(0.82 0.16 200); text-shadow: 0 0 6px oklch(0.82 0.16 200 / 0.85), 0 0 22px oklch(0.82 0.16 200 / 0.5);
+    font-variant-numeric: tabular-nums;
+  }
+  .countdown-unit-label { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: oklch(0.82 0.16 200 / 0.75); }
+  .countdown-started { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; color: oklch(0.82 0.16 200); text-shadow: 0 0 10px oklch(0.82 0.16 200 / 0.7); }
 
   /* seção onde a pessoa marca em quais dias vai participar */
-  .days-section { max-width: 1080px; margin: 0 auto; padding: 88px 24px 40px; }
+  .days-section { max-width: 1080px; margin: 0 auto; padding: 56px 24px 40px; }
   .section-head { text-align: center; margin-bottom: 40px; display: flex; flex-direction: column; gap: 10px; }
-  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: oklch(0.78 0.19 152); text-transform: uppercase; }
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: oklch(0.84 0.16 85); text-transform: uppercase; }
   h2 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(26px, 3.4vw, 34px); }
   .days-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 
   .day-card { cursor: pointer; text-align: left; padding: 24px; border-radius: 16px; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); display: flex; flex-direction: column; gap: 14px; transition: border-color 0.15s ease; }
-  .day-card.active { border-color: oklch(0.78 0.19 152); }
+  .day-card.active { border-color: oklch(0.84 0.16 85); }
   .day-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
   .day-date { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 600; color: oklch(0.96 0.005 260); }
   .day-tag { display: inline-block; width: fit-content; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 999px; text-transform: uppercase; }
   .day-tag.linux { background: oklch(0.78 0.15 70 / 0.18); color: oklch(0.78 0.15 70); }
   .day-tag.talks { background: oklch(0.32 0.02 260 / 0.5); color: oklch(0.75 0.02 260); }
-  .day-tag.invest { background: oklch(0.78 0.19 152 / 0.18); color: oklch(0.78 0.19 152); }
+  .day-tag.invest { background: oklch(0.75 0.15 220 / 0.18); color: oklch(0.75 0.15 220); }
   .day-desc { margin: 0; font-size: 14.5px; line-height: 1.5; color: oklch(0.70 0.02 260); }
 
   /* checkbox customizado usado nos cards de dia e nos cards de empresa */
@@ -70,7 +147,7 @@
     display: flex; align-items: center; justify-content: center; transition: all 0.15s ease;
   }
   .check.small { width: 24px; height: 24px; border-radius: 6px; }
-  .check.checked { border-color: oklch(0.78 0.19 152); background: oklch(0.78 0.19 152); }
+  .check.checked { border-color: oklch(0.84 0.16 85); background: oklch(0.84 0.16 85); }
   .check svg { display: none; }
   .check.checked svg { display: block; }
 
@@ -81,22 +158,42 @@
   .companies-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
 
   .company-card { cursor: pointer; padding: 22px; border-radius: 16px; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); display: flex; flex-direction: column; gap: 14px; transition: border-color 0.15s ease; }
-  .company-card.active { border-color: oklch(0.78 0.19 152); }
+  .company-card.active { border-color: oklch(0.84 0.16 85); }
   .company-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .company-logo { width: 46px; height: 46px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; color: white; flex-shrink: 0; }
   .company-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 16px; }
   .company-tagline { margin: 0; font-size: 13.5px; line-height: 1.5; color: oklch(0.65 0.02 260); }
 
+  /* loja: camiseta oficial do evento (não há venda de ingresso, só desta peça) */
+  .merch-section { max-width: 1080px; margin: 0 auto; padding: 64px 24px 20px; }
+  .merch-card {
+    display: flex; align-items: center; gap: 32px; padding: 28px; border-radius: 20px;
+    background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260);
+  }
+  .merch-image { width: 240px; flex-shrink: 0; border-radius: 14px; overflow: hidden; }
+  .merch-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .merch-info { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; text-align: left; }
+  .merch-desc { margin: 0; font-size: 15px; line-height: 1.6; color: oklch(0.70 0.02 260); }
+  .merch-cta {
+    cursor: pointer; padding: 14px 28px; border-radius: 10px; background: #f5c518; color: oklch(0.12 0.01 260);
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
+    box-shadow: 0 8px 24px oklch(0.84 0.16 85 / 0.25);
+  }
+  .merch-cta:hover { color: oklch(0.12 0.01 260); }
+
   /* resumo do que foi marcado e o botão de confirmar */
   .cta { max-width: 640px; margin: 0 auto; padding: 72px 24px 96px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 18px; }
   .summary { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: oklch(0.60 0.02 260); }
   .confirm-btn { cursor: pointer; padding: 16px 40px; border-radius: 12px; border: none; background: oklch(0.32 0.02 260); color: oklch(0.55 0.02 260); font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 16px; }
-  .confirm-btn.enabled { background: #31d17a; color: oklch(0.12 0.01 260); box-shadow: 0 8px 24px oklch(0.78 0.19 152 / 0.25); }
-  .confirmed-msg { display: none; align-items: center; gap: 10px; padding: 16px 28px; border-radius: 12px; background: oklch(0.78 0.19 152 / 0.14); border: 1px solid oklch(0.78 0.19 152 / 0.4); color: oklch(0.86 0.19 152); font-weight: 600; }
+  .confirm-btn.enabled { background: #f5c518; color: oklch(0.12 0.01 260); box-shadow: 0 8px 24px oklch(0.84 0.16 85 / 0.25); }
+  .confirmed-msg { display: none; align-items: center; gap: 10px; padding: 16px 28px; border-radius: 12px; background: oklch(0.84 0.16 85 / 0.14); border: 1px solid oklch(0.84 0.16 85 / 0.4); color: oklch(0.90 0.16 85); font-weight: 600; }
   .confirmed-msg.visible { display: flex; }
 
   /* rodapé, trocar pelos dados reais do evento */
-  .footer { border-top: 1px solid oklch(0.32 0.02 260 / 0.5); padding: 28px 24px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: oklch(0.50 0.02 260); }
+  .footer { border-top: 1px solid oklch(0.32 0.02 260 / 0.5); padding: 28px 24px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: oklch(0.50 0.02 260); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+  .footer-links a { color: oklch(0.60 0.02 260); }
+  .footer-links a:hover { color: oklch(0.84 0.16 85); }
 
   /* modal de inscrição */
   .modal-overlay {
@@ -124,10 +221,10 @@
     background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260); border-radius: 8px;
     padding: 13px 14px; min-height: 44px;
   }
-  .modal input:focus { outline: none; border-color: oklch(0.78 0.19 152); }
+  .modal input:focus { outline: none; border-color: oklch(0.84 0.16 85); }
   .modal-note { margin: 0; font-size: 12.5px; line-height: 1.5; color: oklch(0.55 0.02 260); }
   .modal-submit {
-    cursor: pointer; padding: 14px; border-radius: 10px; border: none; background: #31d17a;
+    cursor: pointer; padding: 14px; border-radius: 10px; border: none; background: #f5c518;
     color: oklch(0.12 0.01 260); font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
     display: flex; align-items: center; justify-content: center; gap: 10px;
   }
@@ -145,9 +242,18 @@
 
   /* ajustes finos pra celular: menos espaço vazio, tudo mais compacto */
   @media (max-width: 560px) {
-    .hero { padding: 56px 20px 64px; }
-    .days-section { padding: 56px 20px 32px; }
+    .hero { min-height: 480px; padding: 20px 20px 32px; }
+    .hero-cta-btn { top: 12px; right: 12px; padding: 9px 16px; font-size: 12.5px; }
+    .hero-lede { gap: 10px; }
+    .countdown-band-inner { padding: 18px 20px; justify-content: center; text-align: center; }
+    .countdown-label { width: 100%; text-align: center; }
+    .countdown { justify-content: center; width: 100%; }
+    .days-section { padding: 40px 20px 32px; }
     .companies-section { padding: 40px 20px 16px; }
+    .merch-section { padding: 40px 20px 4px; }
+    .merch-card { flex-direction: column; padding: 20px; }
+    .merch-image { width: 100%; max-height: 220px; }
+    .merch-info { align-items: center; text-align: center; }
     .cta { padding: 48px 20px 64px; }
     .footer { padding: 20px 16px; }
     .days-grid, .companies-grid { gap: 14px; }
@@ -155,6 +261,7 @@
     .pills { gap: 8px; }
     .pill { padding: 7px 12px; font-size: 12px; }
     .confirm-btn { width: 100%; padding: 15px 24px; }
+    .merch-cta { width: 100%; text-align: center; }
     .modal { padding: 22px; max-width: 100%; }
   }
 </style>
@@ -163,28 +270,33 @@
 <div class="wrap">
 
   <div class="hero">
-    <div class="hero-dots"></div>
-    <div class="hero-glow"></div>
-    <div class="hero-inner">
+    <a class="hero-cta-btn" href="#diasSection">Inscreva-se já!</a>
+    <div class="hero-lede">
       <div class="badge"><span class="badge-dot"></span>26 A 28 DE OUTUBRO</div>
-      <h1>Semana de Tecnologia</h1>
+      <h1>Semana de<span class="brand-day">Tecnologia</span></h1>
       <p class="subtitle">Três dias de palestras, exposições e o Linux Day — encerrando com a apresentação de projetos de alunos formandos para investidores.</p>
       <div class="pills">
         <span class="pill">26/10 · Linux Day</span>
         <span class="pill">27/10 · Palestras</span>
         <span class="pill">28/10 · Investidores</span>
       </div>
+      <div class="place">UNIP Limeira · Auditório 1</div>
+    </div>
+  </div>
+
+  <div class="countdown-band">
+    <div class="countdown-band-inner">
+      <span class="countdown-label">&gt;_ Contagem regressiva para a abertura</span>
       <div class="countdown" id="countdown">
         <div class="countdown-unit"><span class="countdown-value" id="cdDays">00</span><span class="countdown-unit-label">dias</span></div>
         <div class="countdown-unit"><span class="countdown-value" id="cdHours">00</span><span class="countdown-unit-label">horas</span></div>
         <div class="countdown-unit"><span class="countdown-value" id="cdMinutes">00</span><span class="countdown-unit-label">min</span></div>
         <div class="countdown-unit"><span class="countdown-value" id="cdSeconds">00</span><span class="countdown-unit-label">seg</span></div>
       </div>
-      <div class="place">[Local do evento] · [Nome da instituição]</div>
     </div>
   </div>
 
-  <div class="days-section">
+  <div class="days-section" id="diasSection">
     <div class="section-head">
       <span class="eyebrow">Sua presença</span>
       <h2>Marque os dias que você vai participar</h2>
@@ -202,7 +314,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
           </div>
         </div>
-        <p class="day-desc">Exposição de empresas e palestras abertas sobre o ecossistema open source.</p>
+        <p class="day-desc">Abertura com estandes das empresas parceiras e palestras livres sobre o universo do software livre.</p>
       </div>
 
       <div class="day-card" data-day="day27">
@@ -215,7 +327,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
           </div>
         </div>
-        <p class="day-desc">Palestras com convidados do mercado e continuação da exposição de empresas.</p>
+        <p class="day-desc">Convidados do mercado sobem ao palco enquanto os estandes seguem abertos à visitação.</p>
       </div>
 
       <div class="day-card" data-day="day28">
@@ -228,7 +340,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
           </div>
         </div>
-        <p class="day-desc">Exposição de empresas e apresentação dos projetos de alunos formandos para investidores.</p>
+        <p class="day-desc">Último dia de estandes, com os formandos defendendo seus projetos diante de investidores.</p>
       </div>
 
     </div>
@@ -252,7 +364,29 @@
     </div>
   </div>
 
-  <div class="footer">Semana de Tecnologia · [Nome da instituição] · [Endereço do evento] · [contato@email.com]</div>
+  <div class="merch-section">
+    <div class="section-head">
+      <span class="eyebrow">Loja oficial</span>
+      <h2>Camiseta oficial do Linux Day</h2>
+    </div>
+    <div class="merch-card">
+      <div class="merch-image"><img src="img/poster-linuxday.jpg" alt="Estampa da camiseta oficial do Linux Day"></div>
+      <div class="merch-info">
+        <span class="day-tag linux">Edição limitada</span>
+        <p class="merch-desc">Camiseta exclusiva da Semana de Tecnologia, estampada com a arte oficial do Linux Day. Peças em quantidade limitada — faça sua pré-reserva pelo formulário para garantir a sua.</p>
+        <a class="merch-cta" href="https://docs.google.com/forms/d/e/1FAIpQLScLET0OHWOddDXkjXi5ldGhffCvsDFib9OFl5CO_FRrpW_cBw/viewform" target="_blank" rel="noopener">Solicitar pré-reserva</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Semana de Tecnologia · UNIP Limeira · Auditório 1</span>
+    <div class="footer-links">
+      <a href="mailto:techuniplimeira@gmail.com">techuniplimeira@gmail.com</a>
+      <a href="https://www.youtube.com/@techuniplimeira" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://www.instagram.com/techuniplimeira/" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
 
 </div>
 
@@ -286,7 +420,7 @@
 <script>
   // URL do Web App do Google Apps Script (veja google-apps-script.gs neste repositório
   // para o código a publicar). Troque pela URL gerada após o deploy.
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwJ-LdDo4kyb1EykP4rAnEpXUhH9T1oDC0AC9j_uYeHjFvAf57SbnXZ2f7Qc9QIFass/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwguSUKwoxGXkdhhuIhbZgcVMHh3azj8pKMNJovy-1sHaFiQve3kqV8b-CFH-kY2yTf/exec';
 
   // dados de exemplo das empresas, é só substituir pelas empresas reais
   const companyData = [
