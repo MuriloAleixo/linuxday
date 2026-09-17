@@ -170,24 +170,16 @@
     display: flex; align-items: center; gap: 32px; padding: 28px; border-radius: 20px;
     background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260);
   }
-  .merch-image { width: 240px; flex-shrink: 0; border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform 0.15s ease; }
-  .merch-image:hover { transform: scale(1.02); }
+  .merch-image { width: 240px; flex-shrink: 0; border-radius: 14px; overflow: hidden; }
   .merch-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
   .merch-info { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; text-align: left; }
   .merch-desc { margin: 0; font-size: 15px; line-height: 1.6; color: oklch(0.70 0.02 260); }
-  .merch-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
   .merch-cta {
     cursor: pointer; padding: 14px 28px; border-radius: 10px; background: #f5c518; color: oklch(0.12 0.01 260);
     font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
     box-shadow: 0 8px 24px oklch(0.84 0.16 85 / 0.25); border: none;
   }
   .merch-cta:hover { color: oklch(0.12 0.01 260); }
-  .merch-details-link {
-    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: oklch(0.82 0.16 200);
-    background: transparent; border: none; cursor: pointer; padding: 0;
-  }
-  .merch-details-link:hover { color: oklch(0.88 0.14 200); }
-  .merch-details-link::after { content: ' ›'; }
 
   /* resumo do que foi marcado e o botão de confirmar */
   .cta { max-width: 640px; margin: 0 auto; padding: 72px 24px 96px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 18px; }
@@ -249,46 +241,42 @@
   }
   .shirt-overlay.visible { display: flex; }
   .shirt-modal {
-    position: relative; width: 100%; max-width: 460px; margin: auto;
-    background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); border-radius: 22px;
+    position: relative; width: 100%; max-width: 456px; margin: auto;
+    background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 40px 100px rgba(0,0,0,0.85);
     animation: revealIn 0.35s cubic-bezier(0.2,0.7,0.2,1) both;
   }
   .shirt-modal-close {
-    position: absolute; top: 12px; right: 12px; z-index: 3; cursor: pointer; background: rgba(0,0,0,0.45);
-    border: none; color: oklch(0.9 0.01 260); font-size: 20px; line-height: 1; width: 38px; height: 38px;
+    position: absolute; top: 10px; right: 10px; z-index: 3; cursor: pointer; background: rgba(0,0,0,0.45);
+    border: none; color: oklch(0.9 0.01 260); font-size: 18px; line-height: 1; width: 34px; height: 34px;
     border-radius: 50%; display: flex; align-items: center; justify-content: center;
   }
   .shirt-modal-close:hover { background: rgba(0,0,0,0.7); }
-  .shirt-modal-img { width: 100%; aspect-ratio: 16/11; object-fit: cover; display: block; background: oklch(0.07 0.01 260); }
-  .shirt-modal-body { padding: 26px 28px 28px; display: flex; flex-direction: column; gap: 16px; }
-  .shirt-eyebrow {
-    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
-    color: oklch(0.84 0.16 85);
-  }
+  .shirt-modal-img { width: 100%; height: 381px; object-fit: cover; object-position: center; display: block; background: oklch(0.07 0.01 260); }
+  .shirt-modal-body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 11px; }
   .shirt-title {
     margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700;
-    font-size: 22px; line-height: 1.25; color: white;
+    font-size: 18px; line-height: 1.22; color: white;
   }
-  .shirt-benefit-list { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-  .shirt-benefit-list li { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; line-height: 1.5; color: oklch(0.85 0.02 260); }
+  .shirt-benefit-list { list-style: none; margin: 2px 0 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+  .shirt-benefit-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 12.5px; line-height: 1.42; color: oklch(0.85 0.02 260); }
   .shirt-benefit-icon {
-    flex-shrink: 0; width: 26px; height: 26px; border-radius: 7px; margin-top: 1px;
+    flex-shrink: 0; width: 20px; height: 20px; border-radius: 6px; margin-top: 1px;
     background: oklch(0.84 0.16 85); display: flex; align-items: center; justify-content: center;
   }
   .shirt-why {
-    padding: 14px 16px; border-radius: 12px; background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260);
-    font-size: 13px; line-height: 1.6; color: oklch(0.65 0.02 260);
+    padding: 10px 12px; border-radius: 10px; background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260);
+    font-size: 11.5px; line-height: 1.45; color: oklch(0.65 0.02 260);
   }
   .shirt-why strong { color: oklch(0.9 0.01 260); }
   .shirt-cta {
-    margin-top: 2px; cursor: pointer; text-align: center; padding: 16px; border-radius: 12px; border: none;
+    margin-top: 1px; cursor: pointer; text-align: center; padding: 12px; border-radius: 10px; border: none;
     background: #f5c518; color: oklch(0.12 0.01 260); font-family: 'Space Grotesk', sans-serif; font-weight: 700;
-    font-size: 16px; box-shadow: 0 10px 28px oklch(0.84 0.16 85 / 0.3); transition: transform 0.15s ease;
+    font-size: 14.5px; box-shadow: 0 10px 28px oklch(0.84 0.16 85 / 0.3); transition: transform 0.15s ease;
   }
-  .shirt-cta:hover { transform: translateY(-1px); }
-  .shirt-fineprint { margin: 0; font-size: 11.5px; line-height: 1.5; color: oklch(0.5 0.02 260); text-align: center; }
+  .shirt-cta:hover { color: oklch(0.12 0.01 260); transform: translateY(-1px); }
+  .shirt-fineprint { margin: 0; font-size: 10.5px; line-height: 1.4; color: oklch(0.5 0.02 260); text-align: center; }
 
   @media (max-width: 720px) {
     .days-grid, .companies-grid { grid-template-columns: 1fr; }
@@ -311,7 +299,6 @@
     .merch-card { flex-direction: column; padding: 20px; }
     .merch-image { width: 100%; max-height: 220px; }
     .merch-info { align-items: center; text-align: center; }
-    .merch-actions { justify-content: center; }
     .cta { padding: 48px 20px 64px; }
     .footer { padding: 20px 16px; }
     .days-grid, .companies-grid { gap: 14px; }
@@ -321,7 +308,8 @@
     .confirm-btn { width: 100%; padding: 15px 24px; }
     .merch-cta { width: 100%; text-align: center; }
     .modal { padding: 22px; max-width: 100%; }
-    .shirt-modal-body { padding: 22px 20px 24px; }
+    .shirt-modal-body { padding: 16px 18px 18px; }
+    .shirt-modal-img { height: 290px; }
   }
 </style>
 </head>
@@ -429,14 +417,11 @@
       <h2>Camiseta oficial do Linux Day</h2>
     </div>
     <div class="merch-card">
-      <div class="merch-image" id="merchImageTrigger"><img src="img/camiseta_linuxday.jpeg" alt="Camiseta oficial do Linux Day, frente e verso, com a estampa do Tux"></div>
+      <div class="merch-image"><img src="img/camiseta_linuxday.jpeg" alt="Camiseta oficial do Linux Day, frente e verso, com a estampa do Tux"></div>
       <div class="merch-info">
         <span class="day-tag linux">Edição limitada</span>
         <p class="merch-desc">Camiseta exclusiva da Semana de Tecnologia, estampada com a arte oficial do Linux Day. Peças em quantidade limitada — faça sua pré-reserva pelo formulário para garantir a sua.</p>
-        <div class="merch-actions">
-          <a class="merch-cta" href="https://docs.google.com/forms/d/e/1FAIpQLScLET0OHWOddDXkjXi5ldGhffCvsDFib9OFl5CO_FRrpW_cBw/viewform" target="_blank" rel="noopener">Reserve já!</a>
-          <button class="merch-details-link" id="merchDetailsBtn" type="button">Ver detalhes</button>
-        </div>
+        <a class="merch-cta" href="https://docs.google.com/forms/d/e/1FAIpQLScLET0OHWOddDXkjXi5ldGhffCvsDFib9OFl5CO_FRrpW_cBw/viewform" target="_blank" rel="noopener">Reserve já!</a>
       </div>
     </div>
   </div>
@@ -485,7 +470,7 @@
     <button class="shirt-modal-close" id="shirtModalClose" type="button" aria-label="Fechar">×</button>
     <img class="shirt-modal-img" src="img/camiseta_linuxday.jpeg" alt="Camiseta oficial do Linux Day, frente e verso">
     <div class="shirt-modal-body">
-      <span class="shirt-eyebrow">Edição limitada</span>
+      <span class="day-tag linux">Edição limitada</span>
       <h3 class="shirt-title">Leve um pedaço do Linux Day pra casa</h3>
 
       <ul class="shirt-benefit-list">
@@ -700,13 +685,11 @@
 
   render();
 
-  // modal de venda da camiseta: abre ao clicar na imagem do card ou em "Ver detalhes"
+  // modal de venda da camiseta: abre sozinho ao carregar a página
   const shirtOverlay = document.getElementById('shirtOverlay');
   const shirtModalClose = document.getElementById('shirtModalClose');
   function abrirModalCamiseta() { shirtOverlay.classList.add('visible'); }
   function fecharModalCamiseta() { shirtOverlay.classList.remove('visible'); }
-  document.getElementById('merchDetailsBtn').addEventListener('click', abrirModalCamiseta);
-  document.getElementById('merchImageTrigger').addEventListener('click', abrirModalCamiseta);
   shirtModalClose.addEventListener('click', fecharModalCamiseta);
   shirtOverlay.addEventListener('click', (event) => { if (event.target === shirtOverlay) fecharModalCamiseta(); });
   abrirModalCamiseta();
