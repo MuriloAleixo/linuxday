@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Semana de Tecnologia</title>
+<title>Semana de Tecnologia · Modal Camiseta B (Terminal)</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@600;700&family=Space+Grotesk:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap">
 <style>
   * { box-sizing: border-box; }
@@ -18,7 +18,6 @@
   a { color: oklch(0.84 0.16 85); text-decoration: none; }
   a:hover { color: oklch(0.90 0.16 85); }
 
-  /* animação de entrada da seção de empresas quando o dia 28 é marcado */
   @keyframes revealIn {
     from { opacity: 0; transform: translateY(14px); }
     to { opacity: 1; transform: translateY(0); }
@@ -27,7 +26,6 @@
 
   .wrap { min-height: 100vh; position: relative; overflow: hidden; }
 
-  /* topo da página: a cena do evento como fundo, com o texto pousado na área escura do "chão", abaixo da linha luminosa da arte */
   .hero {
     position: relative; overflow: hidden; width: 100%; min-height: 560px;
     background-image: url('img/vertical_limpo.png');
@@ -35,13 +33,10 @@
     display: flex; align-items: flex-end; justify-content: center;
     padding: 24px 24px 48px;
   }
-  /* escurece só a base da imagem pra garantir contraste do texto e suavizar a transição pra faixa amarela */
   .hero::before {
     content: ''; position: absolute; inset: 0; pointer-events: none;
     background: linear-gradient(180deg, transparent 38%, oklch(0.08 0.02 265 / 0.55) 64%, oklch(0.08 0.02 265 / 0.88) 100%);
   }
-
-  /* botão fixo no canto da hero que leva direto pra seleção de dias */
   .hero-cta-btn {
     position: absolute; top: 20px; right: 20px; z-index: 2;
     padding: 12px 22px; border-radius: 999px; background: #f5c518; color: oklch(0.12 0.01 260);
@@ -49,8 +44,6 @@
     box-shadow: 0 8px 22px rgba(0,0,0,0.4); transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
   .hero-cta-btn:hover { color: oklch(0.12 0.01 260); transform: translateY(-1px); box-shadow: 0 10px 26px rgba(0,0,0,0.45); }
-
-  /* bloco de texto pousado sobre a imagem, centralizado na parte inferior */
   .hero-lede {
     position: relative; z-index: 1;
     max-width: 720px; margin: 0 auto;
@@ -76,12 +69,10 @@
   .pill { padding: 8px 16px; border-radius: 8px; background: oklch(0.13 0.02 265 / 0.65); border: 1px solid oklch(0.84 0.16 85 / 0.3); color: oklch(0.92 0.02 260); backdrop-filter: blur(6px); }
   .place { font-size: 13px; letter-spacing: 0.02em; color: oklch(0.85 0.02 260); text-shadow: 0 2px 6px rgba(0,0,0,0.5); }
 
-  /* faixa de contagem regressiva em largura total: cor neon da cidade futurista da arte, visual cibernético */
   .countdown-band {
     width: 100%; position: relative; overflow: hidden;
     background: linear-gradient(180deg, oklch(0.17 0.03 255), oklch(0.12 0.03 260));
   }
-  /* linhas de brilho no topo e na base, com o mesmo degradê de cor cambiante (tipo rgb) visto na linha neon da arte */
   .countdown-band::before, .countdown-band::after {
     content: ''; position: absolute; left: 0; right: 0; height: 2px;
     background: linear-gradient(90deg, #2dd4ff, #7c5cff, #ff5cc8, #2dd4ff, #5ce1ff, #2dd4ff);
@@ -123,7 +114,6 @@
   .countdown-unit-label { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: oklch(0.82 0.16 200 / 0.75); }
   .countdown-started { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; color: oklch(0.82 0.16 200); text-shadow: 0 0 10px oklch(0.82 0.16 200 / 0.7); }
 
-  /* seção onde a pessoa marca em quais dias vai participar */
   .days-section { max-width: 1080px; margin: 0 auto; padding: 56px 24px 40px; }
   .section-head { text-align: center; margin-bottom: 40px; display: flex; flex-direction: column; gap: 10px; }
   .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: oklch(0.84 0.16 85); text-transform: uppercase; }
@@ -140,7 +130,6 @@
   .day-tag.invest { background: oklch(0.75 0.15 220 / 0.18); color: oklch(0.75 0.15 220); }
   .day-desc { margin: 0; font-size: 14.5px; line-height: 1.5; color: oklch(0.70 0.02 260); }
 
-  /* checkbox customizado usado nos cards de dia e nos cards de empresa */
   .check {
     flex-shrink: 0; width: 26px; height: 26px; border-radius: 7px;
     border: 2px solid oklch(0.32 0.02 260); background: transparent;
@@ -151,7 +140,6 @@
   .check svg { display: none; }
   .check.checked svg { display: block; }
 
-  /* seção de empresas, só aparece quando o dia 28 é marcado */
   .companies-section { display: none; max-width: 1080px; margin: 0 auto; padding: 56px 24px 20px; }
   .companies-section.visible { display: block; }
   .companies-sub { margin: 0; font-size: 14.5px; color: oklch(0.60 0.02 260); }
@@ -164,7 +152,6 @@
   .company-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 16px; }
   .company-tagline { margin: 0; font-size: 13.5px; line-height: 1.5; color: oklch(0.65 0.02 260); }
 
-  /* loja: camiseta oficial do evento (não há venda de ingresso, só desta peça) */
   .merch-section { max-width: 1080px; margin: 0 auto; padding: 64px 24px 20px; }
   .merch-card {
     display: flex; align-items: center; gap: 32px; padding: 28px; border-radius: 20px;
@@ -187,9 +174,8 @@
     background: transparent; border: none; cursor: pointer; padding: 0;
   }
   .merch-details-link:hover { color: oklch(0.88 0.14 200); }
-  .merch-details-link::after { content: ' ›'; }
+  .merch-details-link::before { content: '>_ '; }
 
-  /* resumo do que foi marcado e o botão de confirmar */
   .cta { max-width: 640px; margin: 0 auto; padding: 72px 24px 96px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 18px; }
   .summary { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: oklch(0.60 0.02 260); }
   .confirm-btn { cursor: pointer; padding: 16px 40px; border-radius: 12px; border: none; background: oklch(0.32 0.02 260); color: oklch(0.55 0.02 260); font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 16px; }
@@ -197,7 +183,6 @@
   .confirmed-msg { display: none; align-items: center; gap: 10px; padding: 16px 28px; border-radius: 12px; background: oklch(0.84 0.16 85 / 0.14); border: 1px solid oklch(0.84 0.16 85 / 0.4); color: oklch(0.90 0.16 85); font-weight: 600; }
   .confirmed-msg.visible { display: flex; }
 
-  /* rodapé, trocar pelos dados reais do evento */
   .footer { border-top: 1px solid oklch(0.32 0.02 260 / 0.5); padding: 28px 24px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: oklch(0.50 0.02 260); display: flex; flex-direction: column; align-items: center; gap: 10px; }
   .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
   .footer-links a { color: oklch(0.60 0.02 260); }
@@ -241,54 +226,56 @@
   .modal-submit.loading .spinner { display: inline-block; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* modal de venda da camiseta: foto grande, benefícios claros e o porquê da urgência */
+  /* ============================================================ */
+  /* MODAL DE VENDA DA CAMISETA — opção B: "terminal de compra"    */
+  /* Mesma linguagem visual das janelas de terminal do roleta.html */
+  /* ============================================================ */
   .shirt-overlay {
     display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.78);
     align-items: center; justify-content: center; padding: 20px; z-index: 55;
     overflow-y: auto;
   }
   .shirt-overlay.visible { display: flex; }
-  .shirt-modal {
-    position: relative; width: 100%; max-width: 460px; margin: auto;
-    background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); border-radius: 22px;
-    overflow: hidden;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.85);
+  .shirt-term {
+    width: 100%; max-width: 560px; margin: auto; border-radius: 14px; overflow: hidden; position: relative;
+    background: oklch(0.10 0.015 260); border: 1px solid oklch(0.82 0.16 200 / 0.35);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 60px oklch(0.82 0.16 200 / 0.12);
     animation: revealIn 0.35s cubic-bezier(0.2,0.7,0.2,1) both;
   }
-  .shirt-modal-close {
-    position: absolute; top: 12px; right: 12px; z-index: 3; cursor: pointer; background: rgba(0,0,0,0.45);
-    border: none; color: oklch(0.9 0.01 260); font-size: 20px; line-height: 1; width: 38px; height: 38px;
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  .shirt-term::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; z-index: 1;
+    background: linear-gradient(90deg, #2dd4ff, #7c5cff, #ff5cc8, #2dd4ff, #5ce1ff, #2dd4ff);
+    background-size: 300% 100%; animation: rgbFlow 8s linear infinite;
   }
-  .shirt-modal-close:hover { background: rgba(0,0,0,0.7); }
-  .shirt-modal-img { width: 100%; aspect-ratio: 16/11; object-fit: cover; display: block; background: oklch(0.07 0.01 260); }
-  .shirt-modal-body { padding: 26px 28px 28px; display: flex; flex-direction: column; gap: 16px; }
-  .shirt-eyebrow {
-    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
-    color: oklch(0.84 0.16 85);
+  .shirt-term-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: oklch(0.12 0.01 260); border-bottom: 1px solid oklch(0.25 0.02 260); }
+  .shirt-term-dot { width: 11px; height: 11px; border-radius: 50%; }
+  .shirt-term-dot.red { background: #ff5f56; } .shirt-term-dot.yellow { background: #ffbd2e; } .shirt-term-dot.green { background: #27c93f; }
+  .shirt-term-title { margin-left: 8px; font-size: 12px; color: oklch(0.5 0.02 260); font-family: 'JetBrains Mono', monospace; }
+  .shirt-term-close {
+    margin-left: auto; cursor: pointer; background: transparent; border: none; color: oklch(0.5 0.02 260);
+    font-size: 18px; line-height: 1; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
   }
-  .shirt-title {
-    margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700;
-    font-size: 22px; line-height: 1.25; color: white;
-  }
-  .shirt-benefit-list { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-  .shirt-benefit-list li { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; line-height: 1.5; color: oklch(0.85 0.02 260); }
-  .shirt-benefit-icon {
-    flex-shrink: 0; width: 26px; height: 26px; border-radius: 7px; margin-top: 1px;
-    background: oklch(0.84 0.16 85); display: flex; align-items: center; justify-content: center;
-  }
-  .shirt-why {
-    padding: 14px 16px; border-radius: 12px; background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260);
-    font-size: 13px; line-height: 1.6; color: oklch(0.65 0.02 260);
-  }
-  .shirt-why strong { color: oklch(0.9 0.01 260); }
-  .shirt-cta {
-    margin-top: 2px; cursor: pointer; text-align: center; padding: 16px; border-radius: 12px; border: none;
+  .shirt-term-close:hover { color: oklch(0.9 0.01 260); }
+  .shirt-term-body { padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 13.5px; line-height: 1.75; color: oklch(0.75 0.02 260); }
+  .shirt-term-line.prompt { color: oklch(0.65 0.02 260); }
+  .shirt-term-line.prompt .path { color: oklch(0.82 0.16 200); }
+  .shirt-term-image { width: 100%; border-radius: 10px; margin: 12px 0 16px; display: block; border: 1px solid oklch(0.82 0.16 200 / 0.25); }
+  .shirt-json { margin: 0 0 4px; color: oklch(0.85 0.02 260); }
+  .shirt-json .key { color: oklch(0.75 0.14 200); }
+  .shirt-json .val { color: oklch(0.9 0.16 85); }
+  .shirt-checklist { list-style: none; margin: 14px 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .shirt-checklist li::before { content: '[x] '; color: oklch(0.82 0.16 200); }
+  .shirt-note-line { color: oklch(0.6 0.1 200 / 0.85); font-size: 12.5px; margin: 4px 0 18px; }
+  .shirt-term-cta {
+    display: block; width: 100%; text-align: center; cursor: pointer; padding: 14px; border-radius: 10px; border: none;
     background: #f5c518; color: oklch(0.12 0.01 260); font-family: 'Space Grotesk', sans-serif; font-weight: 700;
-    font-size: 16px; box-shadow: 0 10px 28px oklch(0.84 0.16 85 / 0.3); transition: transform 0.15s ease;
+    font-size: 15px; box-shadow: 0 8px 24px oklch(0.84 0.16 85 / 0.25);
   }
-  .shirt-cta:hover { transform: translateY(-1px); }
-  .shirt-fineprint { margin: 0; font-size: 11.5px; line-height: 1.5; color: oklch(0.5 0.02 260); text-align: center; }
+  .shirt-term-fineprint { margin: 10px 0 0; font-size: 11px; color: oklch(0.45 0.02 260); text-align: center; }
+
+  @media (max-width: 560px) {
+    .shirt-term-body { padding: 18px; font-size: 12.5px; }
+  }
 
   @media (max-width: 720px) {
     .days-grid, .companies-grid { grid-template-columns: 1fr; }
@@ -297,7 +284,6 @@
     .companies-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 
-  /* ajustes finos pra celular: menos espaço vazio, tudo mais compacto */
   @media (max-width: 560px) {
     .hero { min-height: 480px; padding: 20px 20px 32px; }
     .hero-cta-btn { top: 12px; right: 12px; padding: 9px 16px; font-size: 12.5px; }
@@ -321,7 +307,6 @@
     .confirm-btn { width: 100%; padding: 15px 24px; }
     .merch-cta { width: 100%; text-align: center; }
     .modal { padding: 22px; max-width: 100%; }
-    .shirt-modal-body { padding: 22px 20px 24px; }
   }
 </style>
 </head>
@@ -434,8 +419,8 @@
         <span class="day-tag linux">Edição limitada</span>
         <p class="merch-desc">Camiseta exclusiva da Semana de Tecnologia, estampada com a arte oficial do Linux Day. Peças em quantidade limitada — faça sua pré-reserva pelo formulário para garantir a sua.</p>
         <div class="merch-actions">
-          <a class="merch-cta" href="https://docs.google.com/forms/d/e/1FAIpQLScLET0OHWOddDXkjXi5ldGhffCvsDFib9OFl5CO_FRrpW_cBw/viewform" target="_blank" rel="noopener">Reserve já!</a>
-          <button class="merch-details-link" id="merchDetailsBtn" type="button">Ver detalhes</button>
+          <a class="merch-cta" href="https://docs.google.com/forms/d/e/1FAIpQLScLET0OHWOddDXkjXi5ldGhffCvsDFib9OFl5CO_FRrpW_cBw/viewform" target="_blank" rel="noopener">Solicitar pré-reserva</a>
+          <button class="merch-details-link" id="merchDetailsBtn" type="button">ver ficha técnica</button>
         </div>
       </div>
     </div>
@@ -479,46 +464,41 @@
   </div>
 </div>
 
-<!-- modal de venda da camiseta: abre ao clicar na imagem ou em "Ver detalhes" -->
+<!-- modal de venda da camiseta: opção B, estilo terminal de compra -->
 <div class="shirt-overlay" id="shirtOverlay">
-  <div class="shirt-modal">
-    <button class="shirt-modal-close" id="shirtModalClose" type="button" aria-label="Fechar">×</button>
-    <img class="shirt-modal-img" src="img/camiseta_linuxday.jpeg" alt="Camiseta oficial do Linux Day, frente e verso">
-    <div class="shirt-modal-body">
-      <span class="shirt-eyebrow">Edição limitada</span>
-      <h3 class="shirt-title">Leve um pedaço do Linux Day pra casa</h3>
+  <div class="shirt-term">
+    <div class="shirt-term-bar">
+      <div class="shirt-term-dot red"></div><div class="shirt-term-dot yellow"></div><div class="shirt-term-dot green"></div>
+      <span class="shirt-term-title">loja@linux-day: ~</span>
+      <button class="shirt-term-close" id="shirtModalClose" type="button" aria-label="Fechar">×</button>
+    </div>
+    <div class="shirt-term-body">
+      <div class="shirt-term-line prompt"><span class="path">unip@sorteio</span>:~$ cat camiseta.json</div>
+      <img class="shirt-term-image" src="img/camiseta_linuxday.jpeg" alt="Camiseta oficial do Linux Day, frente e verso">
+      <p class="shirt-json">{</p>
+      <p class="shirt-json">&nbsp;&nbsp;<span class="key">"produto"</span>: <span class="val">"Camiseta oficial Linux Day"</span>,</p>
+      <p class="shirt-json">&nbsp;&nbsp;<span class="key">"estampa"</span>: <span class="val">"frente e verso, exclusiva"</span>,</p>
+      <p class="shirt-json">&nbsp;&nbsp;<span class="key">"producao"</span>: <span class="val">"lote único, sob encomenda"</span>,</p>
+      <p class="shirt-json">&nbsp;&nbsp;<span class="key">"reserva"</span>: <span class="val">"sem compromisso de pagamento"</span></p>
+      <p class="shirt-json">}</p>
 
-      <ul class="shirt-benefit-list">
-        <li>
-          <span class="shirt-benefit-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="#1a1206" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
-          Estampa exclusiva do evento, não vendida em outro lugar.
-        </li>
-        <li>
-          <span class="shirt-benefit-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="#1a1206" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
-          Produção sob encomenda — só entra na fábrica quem reservou.
-        </li>
-        <li>
-          <span class="shirt-benefit-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="#1a1206" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
-          Pré-reserva pelo formulário, leva menos de 1 minuto.
-        </li>
+      <div class="shirt-term-line prompt"><span class="path">unip@sorteio</span>:~$ ./checklist.sh --camiseta</div>
+      <ul class="shirt-checklist">
+        <li>estampa exclusiva do evento, não vendida em outro lugar</li>
+        <li>produção sob encomenda — só entra na fábrica quem reservou</li>
+        <li>pré-reserva pelo formulário, leva menos de 1 minuto</li>
       </ul>
+      <p class="shirt-note-line"># depois que o lote fecha, não é possível pedir mais unidades</p>
 
-      <div class="shirt-why">
-        A produção é sob encomenda: só entram na fabricação as camisetas reservadas antes do fechamento do lote. Depois disso, não dá pra pedir mais.
-      </div>
-
-      <a class="shirt-cta" href="https://docs.google.com/forms/d/e/1FAIpQLScLET0OHWOddDXkjXi5ldGhffCvsDFib9OFl5CO_FRrpW_cBw/viewform" target="_blank" rel="noopener">Quero garantir a minha!</a>
-      <p class="shirt-fineprint">A organização entra em contato com você para confirmar tamanho e detalhes do pagamento e entrega.</p>
+      <a class="shirt-term-cta" href="https://docs.google.com/forms/d/e/1FAIpQLScLET0OHWOddDXkjXi5ldGhffCvsDFib9OFl5CO_FRrpW_cBw/viewform" target="_blank" rel="noopener">./reservar.sh</a>
+      <p class="shirt-term-fineprint">sem compromisso de pagamento agora — a organização entra em contato com os detalhes</p>
     </div>
   </div>
 </div>
 
 <script>
-  // URL do Web App do Google Apps Script (veja google-apps-script.gs neste repositório
-  // para o código a publicar). Troque pela URL gerada após o deploy.
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwguSUKwoxGXkdhhuIhbZgcVMHh3azj8pKMNJovy-1sHaFiQve3kqV8b-CFH-kY2yTf/exec';
 
-  // dados de exemplo das empresas, é só substituir pelas empresas reais
   const companyData = [
     { id: 'c1', name: 'NexaCode', initials: 'NC', hue: 152, tagline: 'Automação de testes de software com IA, reduzindo em até 70% o tempo de QA em times ágeis.' },
     { id: 'c2', name: 'AgroSense', initials: 'AS', hue: 200, tagline: 'Sensores IoT de baixo custo para monitorar solo e irrigação em pequenas propriedades rurais.' },
@@ -528,7 +508,6 @@
     { id: 'c6', name: 'SafeCampus', initials: 'SC', hue: 70, tagline: 'App de segurança para campus universitário com botão de pânico e rotas seguras à noite.' }
   ];
 
-  // guarda quais dias e quais empresas estão marcados
   const state = {
     day26: false,
     day27: false,
@@ -539,7 +518,6 @@
 
   const companiesGrid = document.getElementById('companiesGrid');
 
-  // monta a grade de empresas uma única vez; os cliques atualizam classe/estado depois
   companyData.forEach((c) => {
     const card = document.createElement('div');
     card.className = 'company-card';
@@ -563,7 +541,6 @@
     companiesGrid.appendChild(card);
   });
 
-  // clique no card inteiro alterna o estado daquele dia
   document.querySelectorAll('.day-card').forEach((card) => {
     card.addEventListener('click', () => {
       const day = card.dataset.day;
@@ -580,7 +557,6 @@
   const modalSubmit = document.getElementById('modalSubmit');
   const modalSubmitLabel = document.getElementById('modalSubmitLabel');
 
-  // nomes legíveis dos dias, usados no resumo do modal e na planilha
   const dayLabels = {
     day26: '26/10 - Linux Day',
     day27: '27/10 - Palestras',
@@ -625,14 +601,10 @@
       empresas: companyData.filter((c) => state.companies[c.id]).map((c) => c.name).join('; ')
     };
 
-    // trava o botão e mostra o spinner enquanto o envio está em andamento
     modalSubmit.disabled = true;
     modalSubmit.classList.add('loading');
     modalSubmitLabel.textContent = 'Enviando...';
 
-    // envia a inscrição para a planilha do Google (Apps Script). mode 'no-cors' é necessário
-    // porque o Apps Script não responde ao preflight CORS; por isso não dá pra checar o
-    // resultado aqui, mas o Apps Script grava a linha mesmo assim.
     try {
       await fetch(SCRIPT_URL, {
         method: 'POST',
@@ -655,7 +627,6 @@
   });
 
   function render() {
-    // atualiza visual dos cards de dia
     document.querySelectorAll('.day-card').forEach((card) => {
       const day = card.dataset.day;
       const checked = state[day];
@@ -663,10 +634,8 @@
       card.querySelector('.check').classList.toggle('checked', checked);
     });
 
-    // mostra ou esconde a seção de empresas conforme o dia 28
     document.getElementById('companiesSection').classList.toggle('visible', state.day28);
 
-    // atualiza visual dos cards de empresa
     document.querySelectorAll('.company-card').forEach((card) => {
       const selected = !!state.companies[card.dataset.companyId];
       card.classList.toggle('active', selected);
@@ -675,10 +644,8 @@
 
     const selectedDays = ['day26', 'day27', 'day28'].filter((d) => state[d]).length;
     const selectedCompanies = Object.values(state.companies).filter(Boolean).length;
-    // no dia 28 é preciso marcar pelo menos uma empresa pra poder confirmar
     const canConfirm = selectedDays > 0 && (!state.day28 || selectedCompanies > 0);
 
-    // texto que aparece em cima do botão, muda conforme o que já foi marcado
     let summaryText = 'Selecione ao menos um dia para confirmar sua inscrição.';
     if (selectedDays > 0) {
       summaryText = `Você selecionou ${selectedDays} dia${selectedDays > 1 ? 's' : ''}`;
@@ -700,7 +667,7 @@
 
   render();
 
-  // modal de venda da camiseta: abre ao clicar na imagem do card ou em "Ver detalhes"
+  // modal de venda da camiseta
   const shirtOverlay = document.getElementById('shirtOverlay');
   const shirtModalClose = document.getElementById('shirtModalClose');
   function abrirModalCamiseta() { shirtOverlay.classList.add('visible'); }
@@ -709,12 +676,13 @@
   document.getElementById('merchImageTrigger').addEventListener('click', abrirModalCamiseta);
   shirtModalClose.addEventListener('click', fecharModalCamiseta);
   shirtOverlay.addEventListener('click', (event) => { if (event.target === shirtOverlay) fecharModalCamiseta(); });
-  abrirModalCamiseta();
 
-  // contagem regressiva até a abertura do evento (edição vigente calculada
-  // automaticamente: passado o dia 28, o alvo vira a edição do ano seguinte)
+  // === pré-visualização: abre o modal automaticamente ao carregar a página ===
+  // remova esta linha quando for publicar de verdade (o modal deve abrir só pelo clique)
+  window.addEventListener('DOMContentLoaded', abrirModalCamiseta);
+
   (function () {
-    const MES_EVENTO = 9; // outubro (Date usa mês 0-indexado)
+    const MES_EVENTO = 9;
     const DIA_INICIO = 26;
     const DIA_FIM = 28;
     const HORA_ABERTURA = 19;
