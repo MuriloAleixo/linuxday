@@ -155,14 +155,60 @@
   .companies-section { display: none; max-width: 1080px; margin: 0 auto; padding: 56px 24px 20px; }
   .companies-section.visible { display: block; }
   .companies-sub { margin: 0; font-size: 14.5px; color: oklch(0.60 0.02 260); }
-  .companies-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+  .companies-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
 
   .company-card { cursor: pointer; padding: 22px; border-radius: 16px; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); display: flex; flex-direction: column; gap: 14px; transition: border-color 0.15s ease; }
   .company-card.active { border-color: oklch(0.84 0.16 85); }
   .company-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .company-logo { width: 46px; height: 46px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; color: white; flex-shrink: 0; }
+  .company-logo { width: 160px; height: 76px; display: flex; align-items: center; justify-content: flex-start; flex-shrink: 0; }
+  .company-logo img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; }
   .company-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 16px; }
   .company-tagline { margin: 0; font-size: 13.5px; line-height: 1.5; color: oklch(0.65 0.02 260); }
+  .company-more { margin-top: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: oklch(0.84 0.16 85); }
+
+  /* modal com mais informações da empresa, abre ao clicar no card */
+  .company-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.72);
+    align-items: center; justify-content: center; padding: 20px; z-index: 52; overflow-y: auto;
+  }
+  .company-overlay.visible { display: flex; }
+  .company-modal {
+    position: relative; width: 100%; max-width: 600px; margin: auto;
+    background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); border-radius: 20px;
+    padding: 28px; display: flex; flex-direction: column; gap: 22px;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+    animation: revealIn 0.35s cubic-bezier(0.2,0.7,0.2,1) both;
+  }
+  .company-modal-close {
+    position: absolute; top: 12px; right: 12px; cursor: pointer; background: transparent; border: none;
+    color: oklch(0.65 0.02 260); font-size: 22px; line-height: 1; width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .company-modal-close:hover { color: oklch(0.96 0.005 260); }
+  .company-modal-head { display: flex; align-items: center; gap: 18px; padding-right: 36px; }
+  .company-modal-logo { height: 88px; max-width: 200px; flex-shrink: 0; display: flex; align-items: center; }
+  .company-modal-logo img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 10px; }
+  .company-modal-title { display: flex; flex-direction: column; gap: 8px; }
+  .company-modal-title h3 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 22px; line-height: 1.2; }
+  .company-modal-label { margin: 0 0 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: oklch(0.55 0.02 260); }
+  .company-modal-resumo p { margin: 0 0 10px; font-size: 14.5px; line-height: 1.6; color: oklch(0.78 0.02 260); }
+  .company-modal-resumo p:last-child { margin-bottom: 0; }
+  .company-modal-info {
+    display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; padding: 18px; border-radius: 14px;
+    background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260);
+  }
+  .company-team { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+  .company-team li { display: flex; flex-direction: column; gap: 1px; font-size: 13.5px; color: oklch(0.88 0.01 260); }
+  .company-team li span { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: oklch(0.55 0.02 260); }
+  .company-email { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; word-break: break-all; }
+  .company-email:hover { text-decoration: underline; }
+  .company-email svg { flex-shrink: 0; }
+  .company-select {
+    cursor: pointer; display: flex; align-items: center; gap: 12px; width: 100%; padding: 16px; border-radius: 14px;
+    background: transparent; border: 1px solid oklch(0.32 0.02 260); color: oklch(0.96 0.005 260);
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; text-align: left; transition: border-color 0.15s ease;
+  }
+  .company-select.active { border-color: oklch(0.84 0.16 85); }
 
   /* loja: camiseta oficial do evento (não há venda de ingresso, só desta peça) */
   .merch-section { max-width: 1080px; margin: 0 auto; padding: 64px 24px 20px; }
@@ -281,9 +327,6 @@
   @media (max-width: 720px) {
     .days-grid, .companies-grid { grid-template-columns: 1fr; }
   }
-  @media (max-width: 900px) and (min-width: 721px) {
-    .companies-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
 
   /* ajustes finos pra celular: menos espaço vazio, tudo mais compacto */
   @media (max-width: 560px) {
@@ -308,6 +351,11 @@
     .confirm-btn { width: 100%; padding: 15px 24px; }
     .merch-cta { width: 100%; text-align: center; }
     .modal { padding: 22px; max-width: 100%; }
+    .company-overlay { padding: 12px; }
+    .company-modal { padding: 22px 18px; gap: 18px; }
+    .company-modal-head { flex-direction: column; align-items: flex-start; gap: 14px; }
+    .company-modal-logo { height: 72px; }
+    .company-modal-info { grid-template-columns: 1fr; padding: 16px; }
     .shirt-modal-body { padding: 16px 18px 18px; }
     .shirt-modal-img { height: 290px; }
   }
@@ -464,6 +512,43 @@
   </div>
 </div>
 
+<!-- modal com mais informações da empresa: abre ao clicar no card -->
+<div class="company-overlay" id="companyOverlay">
+  <div class="company-modal" role="dialog" aria-modal="true" aria-labelledby="companyModalName">
+    <button class="company-modal-close" id="companyModalClose" type="button" aria-label="Fechar">×</button>
+    <div class="company-modal-head">
+      <div class="company-modal-logo"><img id="companyModalLogo" alt=""></div>
+      <div class="company-modal-title">
+        <span class="day-tag invest">Dia 28 · Apresentação</span>
+        <h3 id="companyModalName"></h3>
+      </div>
+    </div>
+    <div>
+      <p class="company-modal-label">Sobre o projeto</p>
+      <div class="company-modal-resumo" id="companyModalResumo"></div>
+    </div>
+    <div class="company-modal-info">
+      <div>
+        <p class="company-modal-label">Integrantes</p>
+        <ul class="company-team" id="companyModalTeam"></ul>
+      </div>
+      <div>
+        <p class="company-modal-label">Contato</p>
+        <a class="company-email" id="companyModalEmail">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"></rect><path d="M3.5 6.5L12 13L20.5 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          <span id="companyModalEmailText"></span>
+        </a>
+      </div>
+    </div>
+    <button class="company-select" id="companyModalSelect" type="button" aria-pressed="false">
+      <span class="check small">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </span>
+      Quero assistir a esta apresentação
+    </button>
+  </div>
+</div>
+
 <!-- modal de venda da camiseta: abre ao clicar na imagem ou em "Ver detalhes" -->
 <div class="shirt-overlay" id="shirtOverlay">
   <div class="shirt-modal">
@@ -503,14 +588,60 @@
   // para o código a publicar). Troque pela URL gerada após o deploy.
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwguSUKwoxGXkdhhuIhbZgcVMHh3azj8pKMNJovy-1sHaFiQve3kqV8b-CFH-kY2yTf/exec';
 
-  // dados de exemplo das empresas, é só substituir pelas empresas reais
+  // empresas que se apresentam no dia 28 (resumo = um parágrafo por item; integrantes = 'TURMA - Nome')
   const companyData = [
-    { id: 'c1', name: 'NexaCode', initials: 'NC', hue: 152, tagline: 'Automação de testes de software com IA, reduzindo em até 70% o tempo de QA em times ágeis.' },
-    { id: 'c2', name: 'AgroSense', initials: 'AS', hue: 200, tagline: 'Sensores IoT de baixo custo para monitorar solo e irrigação em pequenas propriedades rurais.' },
-    { id: 'c3', name: 'MedPulse', initials: 'MP', hue: 280, tagline: 'Pulseira e app para monitoramento remoto de pacientes crônicos, com alertas em tempo real.' },
-    { id: 'c4', name: 'EcoRota', initials: 'ER', hue: 20, tagline: 'Otimização de rotas de entrega urbana para reduzir emissão de carbono e custo logístico.' },
-    { id: 'c5', name: 'FinLume', initials: 'FL', hue: 320, tagline: 'Educação financeira gamificada para universitários, com simulador de investimentos.' },
-    { id: 'c6', name: 'SafeCampus', initials: 'SC', hue: 70, tagline: 'App de segurança para campus universitário com botão de pânico e rotas seguras à noite.' }
+    {
+      id: 'zancriatix', name: 'Zancriatix', logo: 'img/logo/zancriatix.png', email: 'bekacarlos12@gmail.com',
+      tagline: 'Lógica, jogos e diversão em um só lugar! Venha conhecer a ZANCRIATIX! Uma plataforma educacional criada para transformar o aprendizado de lógica de programação em uma experiência mais interativa, divertida e desafiadora para crianças e adolescentes.',
+      resumo: [
+        'O desafio central envolve conciliar uma interface simples para os estudantes com exigências rigorosas de segurança e proteção de dados de menores de idade, atendendo simultaneamente às expectativas distintas de três grupos de usuários: alunos (autonomia e desafios), professores (gestão de turmas e conteúdos) e responsáveis (acompanhamento e controle parental). Para atender a essas necessidades, são aplicados os processos formais de Engenharia de Requisitos (elicitação, análise, especificação, validação e gestão), além da modelagem visual em UML com matriz de rastreabilidade. Essa estrutura detalha os módulos do sistema, como perfis de acesso, trilhas interativas, gestão pedagógica e relatórios, garantindo usabilidade, segurança de dados e a entrega de uma especificação consistente antes do desenvolvimento do software.'
+      ],
+      integrantes: ['CC7P43 - Rebeca Carlos da Silva Zanca']
+    },
+    {
+      id: 'strawberry', name: 'Strawberry Team', logo: 'img/logo/strawberry_team.png', email: 'lucasjmurad20@gmail.com',
+      tagline: 'VOCÊ ESTÁ PRONTO PARA O DESAFIO? Entre na arena, enfrente hordas de monstros e descubra um RPG feito com acessibilidade em mente. Rounds. Monstros. Estratégia. Diversão para todos.',
+      resumo: [
+        'Conheça nosso RPG de arena!',
+        'Um jogo baseado em rounds de combate, onde você enfrenta diferentes monstros, desenvolve suas estratégias e tenta sobreviver a cada nova onda de inimigos.',
+        'O projeto foi desenvolvido com acessibilidade em mente, buscando tornar a experiência mais inclusiva e agradável para diferentes tipos de jogadores.'
+      ],
+      integrantes: [
+        'CC7P43 - Ricardo Teixeira Leme Bragum',
+        'CC8P43 - Felipe Cassimiro dos Santos',
+        'CC8P43 - Jean Franchesco G. D. Andrea',
+        'CC8P43 - Lucas Juny Murad',
+        'CC8P43 - Rafael Lucas Segal Ramos'
+      ]
+    },
+    {
+      id: 'tradeon', name: 'TradeOn', logo: 'img/logo/tradeon.png', email: 'isaacvinicius.carvalho@gmail.com',
+      tagline: 'E se os dados do mercado pudessem ser transformados em informação de forma inteligente? Conheça o TradeOn, que une IA, programação e análise de dados para transformar o mercado financeiro em informação clara e organizada. Transformando dados de mercado em decisões inteligentes.',
+      resumo: [
+        'O TradeOn é uma plataforma de inteligência de mercado que utiliza tecnologia, análise de dados e inteligência artificial para auxiliar na interpretação de informações do mercado financeiro. Atualmente, investidores e operadores precisam analisar grandes volumes de dados, indicadores técnicos e diferentes períodos do mercado para tomar decisões, o que pode tornar o processo complexo, demorado e sujeito a decisões baseadas em emoções.',
+        'O projeto propõe centralizar e transformar esses dados em informações mais organizadas e compreensíveis, utilizando algoritmos para analisar indicadores, volume, volatilidade e diferentes períodos de tempo. A plataforma apresenta essas informações por meio de dashboards e análises automatizadas, permitindo que o usuário acompanhe o comportamento do mercado e tenha uma visão mais estruturada para sua própria tomada de decisão.',
+        'Além da aplicação prática, o projeto demonstra como tecnologias de código aberto, Python, inteligência artificial, análise de dados e desenvolvimento web podem ser integradas para construir uma solução aplicada a um problema real.'
+      ],
+      integrantes: [
+        'CC8P43 - Bernardo de O. R. dos Santos',
+        'CC8P43 - Iago Pedreira Traldi',
+        'CC8P43 - Isaac Vinícius de C. Amorim',
+        'CC8P43 - Nathali Vitória Santos de Lima',
+        'CC8P43 - Ygor Vinícius Gomes Pereira'
+      ]
+    },
+    {
+      id: 'buscaagil', name: 'Busca Ágil', logo: 'img/logo/buscaAgil.png', email: 'clarachavarettez@gmail.com',
+      tagline: 'Cansado de perder tempo procurando informações? O BuscaÁgil reúne seus arquivos e anotações em um só lugar para você encontrar tudo com rapidez. Encontre. Organize. Ganhe tempo.',
+      resumo: [
+        'O BuscaÁgil é um site responsivo para buscar e salvar arquivos, anotações pessoais, imagens, vídeos, textos e links de forma rápida e de qualquer lugar. Onde esses arquivos são salvos no Google Drive, com tags e ao buscar por uma palavra ou texto ele retorna todos os arquivos que tem sobre o que foi buscado e um resumo de tudo que apareceu. Por ser conectado ao google drive possibilita seu acesso de qualquer celular, ou notebook e a qualquer momento desde que esteja com internet, facilitando aquela busca nos arquivos do computador, nas folhas do caderno para achar tudo sobre um tópico específico. Facilitando a busca, organização e salvamento de seus arquivos. Para isso utilizamos o Python para a implementação das APIs, a Flask que faz o roteamento de URLs e o gerenciamento de requisições, o HTML, CSS e JavaScript para criar as páginas em si, Celery que faz o processamento assíncrono das requisições, ele cria uma fila de tarefas e às agenda, dando um retorno ao usuário enquanto executa as tarefas em segundo plana, permitindo uma maior escalabilidade, também foi usado as APIs do Google Drive e do Gemini, como fallback do Gemini usamos o Ollama para a criação de uma IA local e é ela quem processa os vídeos e por fim utilizamos o Docker Compose para que execute vários contêineres ao mesmo tempo, utilizando uma mesma configuração, ele roda a aplicação inteira de forma integrada.'
+      ],
+      integrantes: [
+        'CC8P43 - Clara Chavarette Zanetti',
+        'CC8P43 - Mateus Honorio dos Santos',
+        'CC8P43 - Murilo Cesar Zerbato Aleixo'
+      ]
+    }
   ];
 
   // guarda quais dias e quais empresas estão marcados
@@ -531,7 +662,7 @@
     card.dataset.companyId = c.id;
     card.innerHTML = `
       <div class="company-top">
-        <div class="company-logo" style="background: oklch(0.60 0.13 ${c.hue})">${c.initials}</div>
+        <div class="company-logo"><img src="${c.logo}" alt="Logo ${c.name}" loading="lazy"></div>
         <div class="check small">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
         </div>
@@ -540,12 +671,81 @@
         <span class="company-name">${c.name}</span>
         <p class="company-tagline">${c.tagline}</p>
       </div>
+      <span class="company-more">Ver detalhes →</span>
     `;
-    card.addEventListener('click', () => {
-      state.companies[c.id] = !state.companies[c.id];
-      render();
+    // o checkbox marca/desmarca direto; o resto do card abre o modal de detalhes
+    card.querySelector('.check').addEventListener('click', (event) => {
+      event.stopPropagation();
+      toggleCompany(c.id);
     });
+    card.addEventListener('click', () => openCompanyModal(c));
     companiesGrid.appendChild(card);
+  });
+
+  function toggleCompany(id) {
+    state.companies[id] = !state.companies[id];
+    render();
+  }
+
+  // modal de detalhes da empresa: resumo, integrantes, contato e opção de selecionar
+  const companyOverlay = document.getElementById('companyOverlay');
+  const companyModalSelect = document.getElementById('companyModalSelect');
+  let companyModalAtual = null;
+
+  function openCompanyModal(c) {
+    companyModalAtual = c;
+
+    const logo = document.getElementById('companyModalLogo');
+    logo.src = c.logo;
+    logo.alt = `Logo ${c.name}`;
+    document.getElementById('companyModalName').textContent = c.name;
+
+    document.getElementById('companyModalResumo').replaceChildren(...c.resumo.map((texto) => {
+      const p = document.createElement('p');
+      p.textContent = texto;
+      return p;
+    }));
+
+    document.getElementById('companyModalTeam').replaceChildren(...c.integrantes.map((integrante) => {
+      const [turma, nome] = integrante.split(' - ');
+      const li = document.createElement('li');
+      li.textContent = nome;
+      const turmaSpan = document.createElement('span');
+      turmaSpan.textContent = turma;
+      li.appendChild(turmaSpan);
+      return li;
+    }));
+
+    document.getElementById('companyModalEmail').href = `mailto:${c.email}?subject=${encodeURIComponent(`Linux Day - ${c.name}`)}`;
+    document.getElementById('companyModalEmailText').textContent = c.email;
+
+    renderCompanyModal();
+    companyOverlay.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCompanyModal() {
+    companyOverlay.classList.remove('visible');
+    document.body.style.overflow = '';
+    companyModalAtual = null;
+  }
+
+  // sincroniza o checkbox do modal com o estado (o card é atualizado pelo render)
+  function renderCompanyModal() {
+    if (!companyModalAtual) return;
+    const selected = !!state.companies[companyModalAtual.id];
+    companyModalSelect.classList.toggle('active', selected);
+    companyModalSelect.querySelector('.check').classList.toggle('checked', selected);
+    companyModalSelect.setAttribute('aria-pressed', selected);
+  }
+
+  companyModalSelect.addEventListener('click', () => toggleCompany(companyModalAtual.id));
+  document.getElementById('companyModalClose').addEventListener('click', closeCompanyModal);
+  companyOverlay.addEventListener('click', (event) => {
+    if (event.target === companyOverlay) closeCompanyModal();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && companyOverlay.classList.contains('visible')) closeCompanyModal();
   });
 
   // clique no card inteiro alterna o estado daquele dia
@@ -657,6 +857,7 @@
       card.classList.toggle('active', selected);
       card.querySelector('.check').classList.toggle('checked', selected);
     });
+    renderCompanyModal();
 
     const selectedDays = ['day26', 'day27', 'day28'].filter((d) => state[d]).length;
     const selectedCompanies = Object.values(state.companies).filter(Boolean).length;
