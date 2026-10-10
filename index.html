@@ -225,7 +225,7 @@
   .day-modal-date { font-family: 'JetBrains Mono', monospace; font-size: 40px; font-weight: 600; line-height: 1; color: oklch(0.96 0.005 260); flex-shrink: 0; }
   .day-modal-desc { margin: 0; font-size: 15px; line-height: 1.6; color: oklch(0.78 0.02 260); }
   .day-info {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px 24px; padding: 18px; border-radius: 14px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 18px 24px; padding: 18px; border-radius: 14px;
     background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260);
   }
   .day-info-value { margin: 0; font-size: 14px; line-height: 1.5; color: oklch(0.88 0.01 260); }
@@ -233,15 +233,8 @@
   .day-schedule li { display: flex; gap: 14px; font-size: 14px; line-height: 1.5; color: oklch(0.88 0.01 260); }
   .day-schedule li span { flex-shrink: 0; min-width: 52px; font-family: 'JetBrains Mono', monospace; color: oklch(0.84 0.16 85); }
 
-  /* card do palestrante dentro do modal do dia (mesmo visual dos cards de empresa) e modal com o currículo */
-  .speaker-card {
-    cursor: pointer; display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: 16px;
-    background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260); transition: border-color 0.15s ease;
-  }
-  .speaker-card:hover { border-color: oklch(0.84 0.16 85); }
-  .speaker-card-info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-  .speaker-photo { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid oklch(0.84 0.16 85 / 0.6); }
-  .speaker-modal-photo { width: 96px; height: 96px; }
+  /* modal do palestrante (abre direto pelo card do dia da palestra) */
+  .speaker-photo { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid oklch(0.84 0.16 85 / 0.6); }
   .speaker-headline { margin: 0; font-size: 13.5px; line-height: 1.5; color: oklch(0.65 0.02 260); }
   .speaker-talk { padding: 16px 18px; border-radius: 14px; background: oklch(0.84 0.16 85 / 0.08); border: 1px solid oklch(0.84 0.16 85 / 0.35); }
   .speaker-talk-title { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 17px; line-height: 1.4; color: oklch(0.96 0.005 260); }
@@ -407,8 +400,7 @@
     .shirt-modal-body { padding: 16px 18px 18px; }
     .day-modal-date { font-size: 32px; }
     .day-info { padding: 16px; }
-    .speaker-photo { width: 60px; height: 60px; }
-    .speaker-modal-photo { width: 84px; height: 84px; }
+    .speaker-photo { width: 84px; height: 84px; }
   }
 
   /* celulares pequenos (até ~360px): título da contagem cabe em uma linha */
@@ -425,11 +417,11 @@
     <div class="hero-lede">
       <div class="badge"><span class="badge-dot"></span>26 A 28 DE OUTUBRO</div>
       <h1>Semana de<span class="brand-day">Tecnologia</span></h1>
-      <p class="subtitle">Três dias de palestras, exposições e o Linux Day — encerrando com a apresentação de projetos de alunos formandos para o público em geral e investidores.</p>
+      <p class="subtitle">Três dias de palestras, exposições e o Linux Day — encerrando com a apresentação de projetos de alunos formandos para o público em geral e empresas.</p>
       <div class="pills">
         <span class="pill">26/10 · Palestra</span>
         <span class="pill">27/10 · Palestras</span>
-        <span class="pill">28/10 · Empresas</span>
+        <span class="pill">28/10 · Público e empresas</span>
       </div>
       <div class="place">UNIP Limeira · Auditório 1</div>
     </div>
@@ -459,13 +451,13 @@
         <div class="day-card-top">
           <div style="display:flex; flex-direction:column; gap:6px;">
             <span class="day-date">26/10</span>
-            <span class="day-tag linux">Linux Day</span>
+            <span class="day-tag linux">Palestra</span>
           </div>
           <div class="check">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
           </div>
         </div>
-        <p class="day-desc">Abertura com estandes das empresas parceiras e palestras livres sobre o universo do software livre.</p>
+        <p class="day-desc">Abertura com a palestra “Da ideia ao mercado: dicas para ter sucesso na transferência de tecnologia”, com o Dr. Eduardo José Sartori.</p>
         <span class="card-more">Ver detalhes →</span>
       </div>
 
@@ -493,7 +485,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
           </div>
         </div>
-        <p class="day-desc">Último dia de estandes, com os formandos defendendo seus projetos diante do público em geral e investidores.</p>
+        <p class="day-desc">Último dia de estandes, com os formandos defendendo seus projetos diante do público em geral e empresas.</p>
         <span class="card-more">Ver detalhes →</span>
       </div>
 
@@ -594,10 +586,6 @@
           <p class="day-info-value">UNIP Limeira · Auditório 1</p>
         </div>
       </div>
-      <div id="dayModalSpeakersWrap" hidden>
-        <p class="company-modal-label">Palestra</p>
-        <div id="dayModalSpeakers"></div>
-      </div>
       <div id="dayModalScheduleWrap" hidden>
         <p class="company-modal-label">Programação</p>
         <ul class="day-schedule" id="dayModalSchedule"></ul>
@@ -614,13 +602,13 @@
   </div>
 </div>
 
-<!-- modal do palestrante: abre ao clicar no card do palestrante dentro do modal do dia -->
+<!-- modal do palestrante: abre direto ao clicar no card do dia que tem palestra (dia 26) -->
 <div class="company-overlay" id="speakerOverlay">
   <div class="company-modal" role="dialog" aria-modal="true" aria-labelledby="speakerModalName">
     <button class="company-modal-close" id="speakerModalClose" type="button" aria-label="Fechar">×</button>
     <div class="company-modal-scroll" id="speakerModalScroll">
       <div class="company-modal-head">
-        <img class="speaker-photo speaker-modal-photo" id="speakerModalPhoto" alt="">
+        <img class="speaker-photo" id="speakerModalPhoto" alt="">
         <div class="company-modal-title">
           <span class="day-tag" id="speakerModalTag"></span>
           <h3 id="speakerModalName"></h3>
@@ -630,6 +618,20 @@
       <div class="speaker-talk">
         <p class="company-modal-label">Palestra</p>
         <p class="speaker-talk-title" id="speakerModalTalk"></p>
+      </div>
+      <div class="day-info">
+        <div>
+          <p class="company-modal-label">Data</p>
+          <p class="day-info-value" id="speakerModalDate"></p>
+        </div>
+        <div id="speakerModalTimeWrap">
+          <p class="company-modal-label">Horário</p>
+          <p class="day-info-value" id="speakerModalTime"></p>
+        </div>
+        <div>
+          <p class="company-modal-label">Local</p>
+          <p class="day-info-value">UNIP Limeira · Auditório 1</p>
+        </div>
       </div>
       <div>
         <p class="company-modal-label">Sobre o palestrante</p>
@@ -929,13 +931,18 @@
     if (event.target === companyOverlay) closeCompanyModal();
   });
 
-  // o checkbox marca/desmarca o dia; o resto do card abre o modal de detalhes do dia
+  // o checkbox marca/desmarca o dia; o resto do card abre direto o modal do palestrante
+  // quando o dia tem palestra (dia 26) ou, nos outros dias, o modal de detalhes do dia
   document.querySelectorAll('.day-card').forEach((card) => {
     card.querySelector('.check').addEventListener('click', (event) => {
       event.stopPropagation();
       toggleDay(card.dataset.day);
     });
-    card.addEventListener('click', () => openDayModal(card));
+    card.addEventListener('click', () => {
+      const palestrante = speakerData.find((s) => s.dia === card.dataset.day);
+      if (palestrante) openSpeakerModal(palestrante);
+      else openDayModal(card);
+    });
   });
 
   function toggleDay(day) {
@@ -1011,24 +1018,6 @@
       return li;
     }));
 
-    // card de cada palestrante do dia; clicar abre o modal do palestrante por cima
-    const palestrantes = speakerData.filter((s) => s.dia === day);
-    document.getElementById('dayModalSpeakersWrap').hidden = palestrantes.length === 0;
-    document.getElementById('dayModalSpeakers').replaceChildren(...palestrantes.map((s) => {
-      const card = document.createElement('div');
-      card.className = 'speaker-card';
-      card.innerHTML = `
-        <img class="speaker-photo" src="${s.foto}" alt="Foto de ${s.name}">
-        <div class="speaker-card-info">
-          <span class="company-name">${s.name}</span>
-          <p class="company-tagline">${s.palestra}</p>
-          <span class="card-more">Ver detalhes →</span>
-        </div>
-      `;
-      card.addEventListener('click', () => openSpeakerModal(s, tag));
-      return card;
-    }));
-
     renderDayModal();
     document.getElementById('dayModalScroll').scrollTop = 0;
     dayOverlay.classList.add('visible');
@@ -1056,23 +1045,29 @@
     if (event.target === dayOverlay) closeDayModal();
   });
 
-  // modal do palestrante: currículo resumido, palestra e opção de marcar o dia da palestra
+  // modal do palestrante: palestra, data/horário/local, currículo resumido e opção de marcar o dia
   const speakerOverlay = document.getElementById('speakerOverlay');
   const speakerModalSelect = document.getElementById('speakerModalSelect');
   let speakerModalAtual = null;
 
-  function openSpeakerModal(s, dayTag) {
+  function openSpeakerModal(s) {
     speakerModalAtual = s;
+    const dayCard = document.querySelector(`[data-day="${s.dia}"]`);
+    const detalhes = dayDetails[s.dia];
 
     const foto = document.getElementById('speakerModalPhoto');
     foto.src = s.foto;
     foto.alt = `Foto de ${s.name}`;
     const modalTag = document.getElementById('speakerModalTag');
-    modalTag.className = dayTag.className;
-    modalTag.textContent = `${dayTag.textContent} · Palestra`;
+    modalTag.className = dayCard.querySelector('.day-tag').className;
+    modalTag.textContent = `${dayCard.querySelector('.day-date').textContent} · Palestra`;
     document.getElementById('speakerModalName').textContent = s.name;
     document.getElementById('speakerModalHeadline').textContent = s.headline;
     document.getElementById('speakerModalTalk').textContent = s.palestra;
+
+    document.getElementById('speakerModalDate').textContent = detalhes.titulo;
+    document.getElementById('speakerModalTimeWrap').hidden = !detalhes.horario;
+    document.getElementById('speakerModalTime').textContent = detalhes.horario;
 
     document.getElementById('speakerModalBio').replaceChildren(...s.bio.map((texto) => {
       const p = document.createElement('p');
@@ -1132,7 +1127,7 @@
     if (event.target === speakerOverlay) closeSpeakerModal();
   });
 
-  // Esc fecha o modal de cima primeiro (o palestrante pode estar aberto por cima do dia)
+  // Esc fecha o modal que estiver aberto
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
     if (companyOverlay.classList.contains('visible')) closeCompanyModal();
@@ -1150,7 +1145,7 @@
 
   // nomes legíveis dos dias, usados no resumo do modal e na planilha
   const dayLabels = {
-    day26: '26/10 - Linux Day',
+    day26: '26/10 - Palestra',
     day27: '27/10 - Palestras',
     day28: '28/10 - Empresas'
   };
