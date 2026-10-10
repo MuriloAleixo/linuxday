@@ -155,10 +155,13 @@
   .companies-section { display: none; max-width: 1080px; margin: 0 auto; padding: 56px 24px 20px; }
   .companies-section.visible { display: block; }
   .companies-sub { margin: 0; font-size: 14.5px; color: oklch(0.60 0.02 260); }
-  .companies-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .companies-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
 
   .company-card { cursor: pointer; padding: 22px; border-radius: 16px; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); display: flex; flex-direction: column; gap: 14px; transition: border-color 0.15s ease; }
   .company-card.active { border-color: oklch(0.84 0.16 85); }
+  /* área de toque maior no checkbox do card (44px), já que tocar fora dele abre o modal */
+  .company-card .check { position: relative; }
+  .company-card .check::before { content: ''; position: absolute; inset: -10px; }
   .company-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .company-logo { width: 160px; height: 76px; display: flex; align-items: center; justify-content: flex-start; flex-shrink: 0; }
   .company-logo img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; }
@@ -172,17 +175,24 @@
     align-items: center; justify-content: center; padding: 20px; z-index: 52; overflow-y: auto;
   }
   .company-overlay.visible { display: flex; }
+  /* o modal não passa da altura da tela: só o conteúdo rola, o × e o botão de seleção ficam sempre visíveis */
   .company-modal {
     position: relative; width: 100%; max-width: 600px; margin: auto;
+    max-height: calc(100vh - 40px); max-height: calc(100dvh - 40px);
     background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); border-radius: 20px;
-    padding: 28px; display: flex; flex-direction: column; gap: 22px;
+    display: flex; flex-direction: column; overflow: hidden;
     box-shadow: 0 40px 100px rgba(0,0,0,0.7);
     animation: revealIn 0.35s cubic-bezier(0.2,0.7,0.2,1) both;
   }
+  .company-modal-scroll {
+    flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+    padding: 28px; display: flex; flex-direction: column; gap: 22px;
+  }
+  .company-modal-footer { flex-shrink: 0; padding: 16px 28px 24px; border-top: 1px solid oklch(0.32 0.02 260 / 0.6); }
   .company-modal-close {
-    position: absolute; top: 12px; right: 12px; cursor: pointer; background: transparent; border: none;
-    color: oklch(0.65 0.02 260); font-size: 22px; line-height: 1; width: 44px; height: 44px;
-    display: flex; align-items: center; justify-content: center;
+    position: absolute; top: 12px; right: 12px; z-index: 2; cursor: pointer; border: none; border-radius: 50%;
+    background: oklch(0.19 0.014 260 / 0.85); color: oklch(0.65 0.02 260); font-size: 22px; line-height: 1;
+    width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
   }
   .company-modal-close:hover { color: oklch(0.96 0.005 260); }
   .company-modal-head { display: flex; align-items: center; gap: 18px; padding-right: 36px; }
@@ -194,13 +204,13 @@
   .company-modal-resumo p { margin: 0 0 10px; font-size: 14.5px; line-height: 1.6; color: oklch(0.78 0.02 260); }
   .company-modal-resumo p:last-child { margin-bottom: 0; }
   .company-modal-info {
-    display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; padding: 18px; border-radius: 14px;
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px 24px; padding: 18px; border-radius: 14px;
     background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260);
   }
   .company-team { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
   .company-team li { display: flex; flex-direction: column; gap: 1px; font-size: 13.5px; color: oklch(0.88 0.01 260); }
   .company-team li span { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: oklch(0.55 0.02 260); }
-  .company-email { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; word-break: break-all; }
+  .company-email { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; white-space: nowrap; }
   .company-email:hover { text-decoration: underline; }
   .company-email svg { flex-shrink: 0; }
   .company-select {
@@ -327,6 +337,9 @@
   @media (max-width: 720px) {
     .days-grid, .companies-grid { grid-template-columns: 1fr; }
   }
+  @media (max-width: 960px) and (min-width: 721px) {
+    .companies-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
 
   /* ajustes finos pra celular: menos espaço vazio, tudo mais compacto */
   @media (max-width: 560px) {
@@ -352,11 +365,19 @@
     .merch-cta { width: 100%; text-align: center; }
     .modal { padding: 22px; max-width: 100%; }
     .company-overlay { padding: 12px; }
-    .company-modal { padding: 22px 18px; gap: 18px; }
+    .company-modal { max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px); }
+    .company-modal-scroll { padding: 22px 18px; gap: 18px; }
+    .company-modal-footer { padding: 14px 18px 18px; }
     .company-modal-head { flex-direction: column; align-items: flex-start; gap: 14px; }
     .company-modal-logo { height: 72px; }
     .company-modal-info { grid-template-columns: 1fr; padding: 16px; }
+    .company-email { white-space: normal; word-break: break-all; }
     .shirt-modal-body { padding: 16px 18px 18px; }
+  }
+
+  /* celulares pequenos (até ~360px): título da contagem cabe em uma linha */
+  @media (max-width: 380px) {
+    .countdown-label { font-size: 10.5px; letter-spacing: 0.04em; }
   }
 </style>
 </head>
@@ -434,7 +455,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
           </div>
         </div>
-        <p class="day-desc">Último dia de estandes, com os formandos defendendo seus projetos diante de investidores.</p>
+        <p class="day-desc">Último dia de estandes, com os formandos defendendo seus projetos diante do público em geral.</p>
       </div>
 
     </div>
@@ -515,36 +536,40 @@
 <div class="company-overlay" id="companyOverlay">
   <div class="company-modal" role="dialog" aria-modal="true" aria-labelledby="companyModalName">
     <button class="company-modal-close" id="companyModalClose" type="button" aria-label="Fechar">×</button>
-    <div class="company-modal-head">
-      <div class="company-modal-logo"><img id="companyModalLogo" alt=""></div>
-      <div class="company-modal-title">
-        <span class="day-tag invest">Dia 28 · Apresentação</span>
-        <h3 id="companyModalName"></h3>
-      </div>
-    </div>
-    <div>
-      <p class="company-modal-label">Sobre o projeto</p>
-      <div class="company-modal-resumo" id="companyModalResumo"></div>
-    </div>
-    <div class="company-modal-info">
-      <div>
-        <p class="company-modal-label">Integrantes</p>
-        <ul class="company-team" id="companyModalTeam"></ul>
+    <div class="company-modal-scroll" id="companyModalScroll">
+      <div class="company-modal-head">
+        <div class="company-modal-logo"><img id="companyModalLogo" alt=""></div>
+        <div class="company-modal-title">
+          <span class="day-tag invest">Dia 28 · Apresentação</span>
+          <h3 id="companyModalName"></h3>
+        </div>
       </div>
       <div>
-        <p class="company-modal-label">Contato</p>
-        <a class="company-email" id="companyModalEmail">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"></rect><path d="M3.5 6.5L12 13L20.5 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-          <span id="companyModalEmailText"></span>
-        </a>
+        <p class="company-modal-label">Sobre o projeto</p>
+        <div class="company-modal-resumo" id="companyModalResumo"></div>
+      </div>
+      <div class="company-modal-info">
+        <div>
+          <p class="company-modal-label">Integrantes</p>
+          <ul class="company-team" id="companyModalTeam"></ul>
+        </div>
+        <div>
+          <p class="company-modal-label">Contato</p>
+          <a class="company-email" id="companyModalEmail">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"></rect><path d="M3.5 6.5L12 13L20.5 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            <span id="companyModalEmailText"></span>
+          </a>
+        </div>
       </div>
     </div>
-    <button class="company-select" id="companyModalSelect" type="button" aria-pressed="false">
-      <span class="check small">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-      </span>
-      Quero assistir a esta apresentação
-    </button>
+    <div class="company-modal-footer">
+      <button class="company-select" id="companyModalSelect" type="button" aria-pressed="false">
+        <span class="check small">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </span>
+        Quero assistir a esta apresentação
+      </button>
+    </div>
   </div>
 </div>
 
@@ -615,7 +640,7 @@
     },
     {
       id: 'tradeon', name: 'TradeOn', logo: 'img/logo/tradeon.png', email: 'isaacvinicius.carvalho@gmail.com',
-      tagline: 'E se os dados do mercado pudessem ser transformados em informação de forma inteligente? Conheça o TradeOn, que une IA, programação e análise de dados para transformar o mercado financeiro em informação clara e organizada. Transformando dados de mercado em decisões inteligentes.',
+      tagline: 'E se os dados do mercado pudessem ser transformados em informação de forma inteligente? Conheça o TradeOn, um projeto que combina inteligência artificial, programação e análise de dados para transformar grandes volumes de informações do mercado financeiro em uma visão mais clara e organizada. Tecnologia para analisar o mercado. Inteligência para transformar dados em informação.',
       resumo: [
         'O TradeOn é uma plataforma de inteligência de mercado que utiliza tecnologia, análise de dados e inteligência artificial para auxiliar na interpretação de informações do mercado financeiro. Atualmente, investidores e operadores precisam analisar grandes volumes de dados, indicadores técnicos e diferentes períodos do mercado para tomar decisões, o que pode tornar o processo complexo, demorado e sujeito a decisões baseadas em emoções.',
         'O projeto propõe centralizar e transformar esses dados em informações mais organizadas e compreensíveis, utilizando algoritmos para analisar indicadores, volume, volatilidade e diferentes períodos de tempo. A plataforma apresenta essas informações por meio de dashboards e análises automatizadas, permitindo que o usuário acompanhe o comportamento do mercado e tenha uma visão mais estruturada para sua própria tomada de decisão.',
@@ -639,6 +664,31 @@
         'CC8P43 - Clara Chavarette Zanetti',
         'CC8P43 - Mateus Honorio dos Santos',
         'CC8P43 - Murilo Cesar Zerbato Aleixo'
+      ]
+    },
+    {
+      id: 'compartilhae', name: 'Compartilhaê', logo: 'img/logo/compartilhae.png', email: 'vinicius.adfreitas@gmail.com',
+      tagline: 'E se a tecnologia pudesse transformar alimentos que seriam desperdiçados em oportunidades para quem precisa? Conheça o Compartilhaê, uma plataforma que conecta quem pode doar com quem quer receber, tornando o compartilhamento de alimentos mais simples, acessível e eficiente.',
+      resumo: [
+        'Compartilhaê é uma plataforma web desenvolvida para facilitar a doação e o compartilhamento de alimentos. O sistema conecta pessoas ou instituições que possuem alimentos disponíveis para doação a pessoas que desejam recebê-los. Os doadores podem cadastrar os alimentos, informar suas quantidades e disponibilidade, enquanto os beneficiários podem visualizar as opções disponíveis e solicitar os itens e quantidades desejadas. Dessa forma, o projeto busca utilizar a tecnologia para aproximar pessoas, reduzir o desperdício de alimentos e promover o acesso a recursos que ainda podem ser aproveitados.'
+      ],
+      integrantes: [
+        'CC7P43 - Kayky Azevedo da Rocha',
+        'CC8P43 - Vinícius Araujo de Freitas',
+        'CC8P43 - Vitor Aparecido Lavezzo'
+      ]
+    },
+    {
+      id: 'segcar', name: 'SegCar', logo: 'img/logo/segcar.png', email: 'tiagogeraldino4@gmail.com',
+      tagline: 'Seu veículo em movimento. Sua segurança em tempo real.',
+      resumo: [
+        'O SegCar é um sistema de telemetria e rastreamento veicular desenvolvido para aumentar a segurança e o controle de veículos. O projeto busca solucionar a dificuldade de acompanhar a localização e as informações do veículo em tempo real, utilizando GPS, hardware embarcado e uma plataforma web. A solução permite visualizar a localização do veículo e seus dados de telemetria de forma centralizada, contribuindo para um monitoramento mais rápido, seguro e eficiente.'
+      ],
+      integrantes: [
+        'CC8P43 - Gabriel Mossarelli Mofatto',
+        'CC8P43 - Guilherme Gouvea Marrafon',
+        'CC8P43 - Leonardo Testa de Miranda',
+        'CC8P43 - Tiago do Carmo Geraldino'
       ]
     }
   ];
@@ -719,6 +769,7 @@
     document.getElementById('companyModalEmailText').textContent = c.email;
 
     renderCompanyModal();
+    document.getElementById('companyModalScroll').scrollTop = 0;
     companyOverlay.classList.add('visible');
     document.body.style.overflow = 'hidden';
   }
