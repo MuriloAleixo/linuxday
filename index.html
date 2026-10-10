@@ -232,14 +232,6 @@
   .day-schedule { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
   .day-schedule li { display: flex; gap: 14px; font-size: 14px; line-height: 1.5; color: oklch(0.88 0.01 260); }
   .day-schedule li span { flex-shrink: 0; min-width: 52px; font-family: 'JetBrains Mono', monospace; color: oklch(0.84 0.16 85); }
-  .day-companies { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-  .day-company {
-    cursor: pointer; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 12px; border-radius: 12px;
-    background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260); color: oklch(0.92 0.01 260);
-    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px; text-align: left; transition: border-color 0.15s ease;
-  }
-  .day-company:hover { border-color: oklch(0.84 0.16 85); }
-  .day-company img { width: 64px; height: 36px; object-fit: contain; border-radius: 6px; flex-shrink: 0; }
 
   /* card do palestrante dentro do modal do dia (mesmo visual dos cards de empresa) e modal com o currículo */
   .speaker-card {
@@ -415,7 +407,6 @@
     .shirt-modal-body { padding: 16px 18px 18px; }
     .day-modal-date { font-size: 32px; }
     .day-info { padding: 16px; }
-    .day-companies { grid-template-columns: 1fr; }
     .speaker-photo { width: 60px; height: 60px; }
     .speaker-modal-photo { width: 84px; height: 84px; }
   }
@@ -434,11 +425,11 @@
     <div class="hero-lede">
       <div class="badge"><span class="badge-dot"></span>26 A 28 DE OUTUBRO</div>
       <h1>Semana de<span class="brand-day">Tecnologia</span></h1>
-      <p class="subtitle">Três dias de palestras, exposições e o Linux Day — encerrando com a apresentação de projetos de alunos formandos para investidores.</p>
+      <p class="subtitle">Três dias de palestras, exposições e o Linux Day — encerrando com a apresentação de projetos de alunos formandos para o público em geral.</p>
       <div class="pills">
         <span class="pill">26/10 · Linux Day</span>
         <span class="pill">27/10 · Palestras</span>
-        <span class="pill">28/10 · Investidores</span>
+        <span class="pill">28/10 · Empresas</span>
       </div>
       <div class="place">UNIP Limeira · Auditório 1</div>
     </div>
@@ -496,7 +487,7 @@
         <div class="day-card-top">
           <div style="display:flex; flex-direction:column; gap:6px;">
             <span class="day-date">28/10</span>
-            <span class="day-tag invest">Investidores</span>
+            <span class="day-tag invest">Empresas</span>
           </div>
           <div class="check">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
@@ -610,10 +601,6 @@
       <div id="dayModalScheduleWrap" hidden>
         <p class="company-modal-label">Programação</p>
         <ul class="day-schedule" id="dayModalSchedule"></ul>
-      </div>
-      <div id="dayModalCompaniesWrap" hidden>
-        <p class="company-modal-label">Apresentações</p>
-        <ul class="day-companies" id="dayModalCompanies"></ul>
       </div>
     </div>
     <div class="company-modal-footer">
@@ -961,7 +948,7 @@
   const dayDetails = {
     day26: { titulo: 'Segunda-feira, 26 de outubro', horario: 'A partir das 19h30', programacao: [] },
     day27: { titulo: 'Terça-feira, 27 de outubro', horario: '', programacao: [] },
-    day28: { titulo: 'Quarta-feira, 28 de outubro', horario: '', programacao: [], mostrarEmpresas: true }
+    day28: { titulo: 'Quarta-feira, 28 de outubro', horario: '', programacao: [] }
   };
 
   // palestrantes (dados do currículo enviado); "dia" liga o palestrante ao card do dia
@@ -999,22 +986,6 @@
   const dayModalSelect = document.getElementById('dayModalSelect');
   let dayModalAtual = null;
 
-  // lista de empresas do dia 28 dentro do modal; clicar abre o modal da empresa por cima
-  document.getElementById('dayModalCompanies').replaceChildren(...companyData.map((c) => {
-    const li = document.createElement('li');
-    const botao = document.createElement('button');
-    botao.type = 'button';
-    botao.className = 'day-company';
-    const logo = document.createElement('img');
-    logo.src = c.logo;
-    logo.alt = '';
-    logo.loading = 'lazy';
-    botao.append(logo, c.name);
-    botao.addEventListener('click', () => openCompanyModal(c));
-    li.appendChild(botao);
-    return li;
-  }));
-
   function openDayModal(card) {
     const day = card.dataset.day;
     const detalhes = dayDetails[day];
@@ -1039,8 +1010,6 @@
       li.append(hora, item.titulo);
       return li;
     }));
-
-    document.getElementById('dayModalCompaniesWrap').hidden = !detalhes.mostrarEmpresas;
 
     // card de cada palestrante do dia; clicar abre o modal do palestrante por cima
     const palestrantes = speakerData.filter((s) => s.dia === day);
@@ -1163,7 +1132,7 @@
     if (event.target === speakerOverlay) closeSpeakerModal();
   });
 
-  // Esc fecha o modal de cima primeiro (empresa ou palestrante podem estar abertos por cima do dia)
+  // Esc fecha o modal de cima primeiro (o palestrante pode estar aberto por cima do dia)
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
     if (companyOverlay.classList.contains('visible')) closeCompanyModal();
@@ -1183,7 +1152,7 @@
   const dayLabels = {
     day26: '26/10 - Linux Day',
     day27: '27/10 - Palestras',
-    day28: '28/10 - Investidores'
+    day28: '28/10 - Empresas'
   };
 
   confirmBtn.addEventListener('click', () => {
