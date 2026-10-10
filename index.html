@@ -159,15 +159,15 @@
 
   .company-card { cursor: pointer; padding: 22px; border-radius: 16px; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); display: flex; flex-direction: column; gap: 14px; transition: border-color 0.15s ease; }
   .company-card.active { border-color: oklch(0.84 0.16 85); }
-  /* área de toque maior no checkbox do card (44px), já que tocar fora dele abre o modal */
-  .company-card .check { position: relative; }
-  .company-card .check::before { content: ''; position: absolute; inset: -10px; }
+  /* área de toque maior no checkbox dos cards (~44px), já que tocar fora dele abre o modal */
+  .company-card .check, .day-card .check { position: relative; }
+  .company-card .check::before, .day-card .check::before { content: ''; position: absolute; inset: -10px; }
   .company-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .company-logo { width: 160px; height: 76px; display: flex; align-items: center; justify-content: flex-start; flex-shrink: 0; }
   .company-logo img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; }
   .company-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 16px; }
   .company-tagline { margin: 0; font-size: 13.5px; line-height: 1.5; color: oklch(0.65 0.02 260); }
-  .company-more { margin-top: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: oklch(0.84 0.16 85); }
+  .card-more { margin-top: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: oklch(0.84 0.16 85); }
 
   /* modal com mais informações da empresa, abre ao clicar no card */
   .company-overlay {
@@ -219,6 +219,46 @@
     font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; text-align: left; transition: border-color 0.15s ease;
   }
   .company-select.active { border-color: oklch(0.84 0.16 85); }
+
+  /* modal de detalhes do dia: reaproveita a estrutura do modal da empresa e fica por baixo dele */
+  .day-overlay { z-index: 51; }
+  .day-modal-date { font-family: 'JetBrains Mono', monospace; font-size: 40px; font-weight: 600; line-height: 1; color: oklch(0.96 0.005 260); flex-shrink: 0; }
+  .day-modal-desc { margin: 0; font-size: 15px; line-height: 1.6; color: oklch(0.78 0.02 260); }
+  .day-info {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px 24px; padding: 18px; border-radius: 14px;
+    background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260);
+  }
+  .day-info-value { margin: 0; font-size: 14px; line-height: 1.5; color: oklch(0.88 0.01 260); }
+  .day-schedule { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .day-schedule li { display: flex; gap: 14px; font-size: 14px; line-height: 1.5; color: oklch(0.88 0.01 260); }
+  .day-schedule li span { flex-shrink: 0; min-width: 52px; font-family: 'JetBrains Mono', monospace; color: oklch(0.84 0.16 85); }
+  .day-companies { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .day-company {
+    cursor: pointer; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 12px; border-radius: 12px;
+    background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260); color: oklch(0.92 0.01 260);
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px; text-align: left; transition: border-color 0.15s ease;
+  }
+  .day-company:hover { border-color: oklch(0.84 0.16 85); }
+  .day-company img { width: 64px; height: 36px; object-fit: contain; border-radius: 6px; flex-shrink: 0; }
+
+  /* card do palestrante dentro do modal do dia (mesmo visual dos cards de empresa) e modal com o currículo */
+  .speaker-card {
+    cursor: pointer; display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: 16px;
+    background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260); transition: border-color 0.15s ease;
+  }
+  .speaker-card:hover { border-color: oklch(0.84 0.16 85); }
+  .speaker-card-info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .speaker-photo { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid oklch(0.84 0.16 85 / 0.6); }
+  .speaker-modal-photo { width: 96px; height: 96px; }
+  .speaker-headline { margin: 0; font-size: 13.5px; line-height: 1.5; color: oklch(0.65 0.02 260); }
+  .speaker-talk { padding: 16px 18px; border-radius: 14px; background: oklch(0.84 0.16 85 / 0.08); border: 1px solid oklch(0.84 0.16 85 / 0.35); }
+  .speaker-talk-title { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 17px; line-height: 1.4; color: oklch(0.96 0.005 260); }
+  .speaker-areas { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .speaker-areas li {
+    font-size: 12.5px; line-height: 1.3; padding: 6px 10px; border-radius: 999px;
+    background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260); color: oklch(0.85 0.02 260);
+  }
+  .speaker-links { display: flex; flex-direction: column; gap: 10px; }
 
   /* loja: camiseta oficial do evento (não há venda de ingresso, só desta peça) */
   .merch-section { max-width: 1080px; margin: 0 auto; padding: 64px 24px 20px; }
@@ -373,6 +413,11 @@
     .company-modal-info { grid-template-columns: 1fr; padding: 16px; }
     .company-email { white-space: normal; word-break: break-all; }
     .shirt-modal-body { padding: 16px 18px 18px; }
+    .day-modal-date { font-size: 32px; }
+    .day-info { padding: 16px; }
+    .day-companies { grid-template-columns: 1fr; }
+    .speaker-photo { width: 60px; height: 60px; }
+    .speaker-modal-photo { width: 84px; height: 84px; }
   }
 
   /* celulares pequenos (até ~360px): título da contagem cabe em uma linha */
@@ -430,6 +475,7 @@
           </div>
         </div>
         <p class="day-desc">Abertura com estandes das empresas parceiras e palestras livres sobre o universo do software livre.</p>
+        <span class="card-more">Ver detalhes →</span>
       </div>
 
       <div class="day-card" data-day="day27">
@@ -443,6 +489,7 @@
           </div>
         </div>
         <p class="day-desc">Convidados do mercado sobem ao palco enquanto os estandes seguem abertos à visitação.</p>
+        <span class="card-more">Ver detalhes →</span>
       </div>
 
       <div class="day-card" data-day="day28">
@@ -456,6 +503,7 @@
           </div>
         </div>
         <p class="day-desc">Último dia de estandes, com os formandos defendendo seus projetos diante do público em geral.</p>
+        <span class="card-more">Ver detalhes →</span>
       </div>
 
     </div>
@@ -529,6 +577,100 @@
         <span id="modalSubmitLabel">Confirmar inscrição</span>
       </button>
     </form>
+  </div>
+</div>
+
+<!-- modal com detalhes do dia: abre ao clicar no card do dia (mesma estrutura do modal da empresa) -->
+<div class="company-overlay day-overlay" id="dayOverlay">
+  <div class="company-modal" role="dialog" aria-modal="true" aria-labelledby="dayModalTitle">
+    <button class="company-modal-close" id="dayModalClose" type="button" aria-label="Fechar">×</button>
+    <div class="company-modal-scroll" id="dayModalScroll">
+      <div class="company-modal-head">
+        <span class="day-modal-date" id="dayModalDate"></span>
+        <div class="company-modal-title">
+          <span class="day-tag" id="dayModalTag"></span>
+          <h3 id="dayModalTitle"></h3>
+        </div>
+      </div>
+      <p class="day-modal-desc" id="dayModalDesc"></p>
+      <div class="day-info">
+        <div id="dayModalTimeWrap">
+          <p class="company-modal-label">Horário</p>
+          <p class="day-info-value" id="dayModalTime"></p>
+        </div>
+        <div>
+          <p class="company-modal-label">Local</p>
+          <p class="day-info-value">UNIP Limeira · Auditório 1</p>
+        </div>
+      </div>
+      <div id="dayModalSpeakersWrap" hidden>
+        <p class="company-modal-label">Palestra</p>
+        <div id="dayModalSpeakers"></div>
+      </div>
+      <div id="dayModalScheduleWrap" hidden>
+        <p class="company-modal-label">Programação</p>
+        <ul class="day-schedule" id="dayModalSchedule"></ul>
+      </div>
+      <div id="dayModalCompaniesWrap" hidden>
+        <p class="company-modal-label">Apresentações</p>
+        <ul class="day-companies" id="dayModalCompanies"></ul>
+      </div>
+    </div>
+    <div class="company-modal-footer">
+      <button class="company-select" id="dayModalSelect" type="button" aria-pressed="false">
+        <span class="check small">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </span>
+        Vou participar deste dia
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- modal do palestrante: abre ao clicar no card do palestrante dentro do modal do dia -->
+<div class="company-overlay" id="speakerOverlay">
+  <div class="company-modal" role="dialog" aria-modal="true" aria-labelledby="speakerModalName">
+    <button class="company-modal-close" id="speakerModalClose" type="button" aria-label="Fechar">×</button>
+    <div class="company-modal-scroll" id="speakerModalScroll">
+      <div class="company-modal-head">
+        <img class="speaker-photo speaker-modal-photo" id="speakerModalPhoto" alt="">
+        <div class="company-modal-title">
+          <span class="day-tag" id="speakerModalTag"></span>
+          <h3 id="speakerModalName"></h3>
+          <p class="speaker-headline" id="speakerModalHeadline"></p>
+        </div>
+      </div>
+      <div class="speaker-talk">
+        <p class="company-modal-label">Palestra</p>
+        <p class="speaker-talk-title" id="speakerModalTalk"></p>
+      </div>
+      <div>
+        <p class="company-modal-label">Sobre o palestrante</p>
+        <div class="company-modal-resumo" id="speakerModalBio"></div>
+      </div>
+      <div>
+        <p class="company-modal-label">Áreas de atuação</p>
+        <ul class="speaker-areas" id="speakerModalAreas"></ul>
+      </div>
+      <div class="company-modal-info">
+        <div>
+          <p class="company-modal-label">Formação</p>
+          <ul class="company-team" id="speakerModalEducation"></ul>
+        </div>
+        <div>
+          <p class="company-modal-label">Currículo</p>
+          <div class="speaker-links" id="speakerModalLinks"></div>
+        </div>
+      </div>
+    </div>
+    <div class="company-modal-footer">
+      <button class="company-select" id="speakerModalSelect" type="button" aria-pressed="false">
+        <span class="check small">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </span>
+        Quero assistir a esta palestra
+      </button>
+    </div>
   </div>
 </div>
 
@@ -720,7 +862,7 @@
         <span class="company-name">${c.name}</span>
         <p class="company-tagline">${c.tagline}</p>
       </div>
-      <span class="company-more">Ver detalhes →</span>
+      <span class="card-more">Ver detalhes →</span>
     `;
     // o checkbox marca/desmarca direto; o resto do card abre o modal de detalhes
     card.querySelector('.check').addEventListener('click', (event) => {
@@ -771,13 +913,18 @@
     renderCompanyModal();
     document.getElementById('companyModalScroll').scrollTop = 0;
     companyOverlay.classList.add('visible');
-    document.body.style.overflow = 'hidden';
+    syncBodyScroll();
   }
 
   function closeCompanyModal() {
     companyOverlay.classList.remove('visible');
-    document.body.style.overflow = '';
+    syncBodyScroll();
     companyModalAtual = null;
+  }
+
+  // trava a rolagem da página enquanto algum modal de detalhes (empresa ou dia) estiver aberto
+  function syncBodyScroll() {
+    document.body.style.overflow = document.querySelector('.company-overlay.visible') ? 'hidden' : '';
   }
 
   // sincroniza o checkbox do modal com o estado (o card é atualizado pelo render)
@@ -794,17 +941,234 @@
   companyOverlay.addEventListener('click', (event) => {
     if (event.target === companyOverlay) closeCompanyModal();
   });
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && companyOverlay.classList.contains('visible')) closeCompanyModal();
+
+  // o checkbox marca/desmarca o dia; o resto do card abre o modal de detalhes do dia
+  document.querySelectorAll('.day-card').forEach((card) => {
+    card.querySelector('.check').addEventListener('click', (event) => {
+      event.stopPropagation();
+      toggleDay(card.dataset.day);
+    });
+    card.addEventListener('click', () => openDayModal(card));
   });
 
-  // clique no card inteiro alterna o estado daquele dia
-  document.querySelectorAll('.day-card').forEach((card) => {
-    card.addEventListener('click', () => {
-      const day = card.dataset.day;
-      state[day] = !state[day];
-      render();
-    });
+  function toggleDay(day) {
+    state[day] = !state[day];
+    render();
+  }
+
+  // detalhes extras de cada dia (data, tag e descrição vêm do próprio card).
+  // programacao: lista de { hora: '19h30', titulo: '...' }; só aparece no modal quando tiver itens
+  const dayDetails = {
+    day26: { titulo: 'Segunda-feira, 26 de outubro', horario: 'A partir das 19h30', programacao: [] },
+    day27: { titulo: 'Terça-feira, 27 de outubro', horario: '', programacao: [] },
+    day28: { titulo: 'Quarta-feira, 28 de outubro', horario: '', programacao: [], mostrarEmpresas: true }
+  };
+
+  // palestrantes (dados do currículo enviado); "dia" liga o palestrante ao card do dia
+  const speakerData = [
+    {
+      id: 'sartori', dia: 'day26', name: 'Dr. Eduardo José Sartori', foto: 'img/palestrantes/eduardo-sartori.jpg',
+      headline: 'Engenheiro, Pesquisador, Pós-Doutor em Engenharia Elétrica & Consultor Sênior em EMC e ISO 17025',
+      palestra: 'Da ideia ao mercado: dicas para ter sucesso na transferência de tecnologia',
+      bio: [
+        'Engenheiro, pesquisador e docente com mais de 35 anos de carreira articulando ciência aplicada, consultoria para o setor industrial e gestão de projetos tecnológicos de alta complexidade. Profundo conhecimento na área de Compatibilidade Eletromagnética (EMC/EMI), Metamateriais, Sistemas de Teste e Medição, Normas ABNT/ANATEL/ISO 17025 e Gestão da Inovação e Transferência de Tecnologia.',
+        'Atualmente é Pós-Doutorando e Professor Colaborador Voluntário na FEEC-UNICAMP, integrante do Centro de Pesquisa em Engenharia SMARTNESS 2030 (Redes e serviços inteligentes rumo 2030, em parceria com a Ericsson e FAPESP). Atua na liderança de iniciativas de Gestão da Transferência de Tecnologia, Propriedade Intelectual, na implantação do Laboratório de Referência em Tecnologias 5G/6G e coordena o LEMAC – Laboratório de Eletromagnetismo Aplicado e Computacional.',
+        'Possui sólido histórico na concepção, projeto e acreditação de infraestruturas laboratoriais para ensaios de conformidade, tendo prestado consultoria técnica para mais de 50 grandes indústrias, institutos de pesquisa e órgãos governamentais nas áreas automotiva, telecomunicações, aeroespacial, defesa e eletroeletrônica.'
+      ],
+      areas: [
+        'Compatibilidade Eletromagnética (EMC/EMI)', 'Micro-ondas & Propagação de Ondas', 'Metamateriais & Grades EBG',
+        'Infraestrutura Laboratorial', 'Gestão da Qualidade ISO/IEC 17025', 'Gestão da Inovação & Transferência Tecnológica',
+        'Propriedade Intelectual & Patentes (INPI)', 'Comitês de Ética em Pesquisa (CEP)', 'Educação em Engenharia', 'Ensaios de Certificação'
+      ],
+      formacao: [
+        { curso: 'Pós-Doutorado em Gestão da Pesquisa e Inovação Tecnológica', local: 'FEEC-UNICAMP · 2024 — atual' },
+        { curso: 'Doutorado em Engenharia Elétrica', local: 'FEEC-UNICAMP · 2004 — 2009' },
+        { curso: 'Mestrado em Engenharia Elétrica', local: 'FEEC-UNICAMP · 2002 — 2004' },
+        { curso: 'Especialização em Psicologia Clínica', local: 'UNISAL · 2017 — 2019' },
+        { curso: 'Graduação em Eng. de Produção Mecânica', local: 'UNIMEP · 1989 — 1995' }
+      ],
+      links: [
+        { label: 'Currículo Lattes', url: 'http://lattes.cnpq.br/3002208596173699' },
+        { label: 'ORCID', url: 'https://orcid.org/0000-0001-9600-883X' }
+      ]
+    }
+  ];
+
+  // modal de detalhes do dia: mesma estrutura do modal da empresa
+  const dayOverlay = document.getElementById('dayOverlay');
+  const dayModalSelect = document.getElementById('dayModalSelect');
+  let dayModalAtual = null;
+
+  // lista de empresas do dia 28 dentro do modal; clicar abre o modal da empresa por cima
+  document.getElementById('dayModalCompanies').replaceChildren(...companyData.map((c) => {
+    const li = document.createElement('li');
+    const botao = document.createElement('button');
+    botao.type = 'button';
+    botao.className = 'day-company';
+    const logo = document.createElement('img');
+    logo.src = c.logo;
+    logo.alt = '';
+    logo.loading = 'lazy';
+    botao.append(logo, c.name);
+    botao.addEventListener('click', () => openCompanyModal(c));
+    li.appendChild(botao);
+    return li;
+  }));
+
+  function openDayModal(card) {
+    const day = card.dataset.day;
+    const detalhes = dayDetails[day];
+    const tag = card.querySelector('.day-tag');
+    dayModalAtual = day;
+
+    document.getElementById('dayModalDate').textContent = card.querySelector('.day-date').textContent;
+    const modalTag = document.getElementById('dayModalTag');
+    modalTag.className = tag.className;
+    modalTag.textContent = tag.textContent;
+    document.getElementById('dayModalTitle').textContent = detalhes.titulo;
+    document.getElementById('dayModalDesc').textContent = card.querySelector('.day-desc').textContent;
+
+    document.getElementById('dayModalTimeWrap').hidden = !detalhes.horario;
+    document.getElementById('dayModalTime').textContent = detalhes.horario;
+
+    document.getElementById('dayModalScheduleWrap').hidden = detalhes.programacao.length === 0;
+    document.getElementById('dayModalSchedule').replaceChildren(...detalhes.programacao.map((item) => {
+      const li = document.createElement('li');
+      const hora = document.createElement('span');
+      hora.textContent = item.hora;
+      li.append(hora, item.titulo);
+      return li;
+    }));
+
+    document.getElementById('dayModalCompaniesWrap').hidden = !detalhes.mostrarEmpresas;
+
+    // card de cada palestrante do dia; clicar abre o modal do palestrante por cima
+    const palestrantes = speakerData.filter((s) => s.dia === day);
+    document.getElementById('dayModalSpeakersWrap').hidden = palestrantes.length === 0;
+    document.getElementById('dayModalSpeakers').replaceChildren(...palestrantes.map((s) => {
+      const card = document.createElement('div');
+      card.className = 'speaker-card';
+      card.innerHTML = `
+        <img class="speaker-photo" src="${s.foto}" alt="Foto de ${s.name}">
+        <div class="speaker-card-info">
+          <span class="company-name">${s.name}</span>
+          <p class="company-tagline">${s.palestra}</p>
+          <span class="card-more">Ver detalhes →</span>
+        </div>
+      `;
+      card.addEventListener('click', () => openSpeakerModal(s, tag));
+      return card;
+    }));
+
+    renderDayModal();
+    document.getElementById('dayModalScroll').scrollTop = 0;
+    dayOverlay.classList.add('visible');
+    syncBodyScroll();
+  }
+
+  function closeDayModal() {
+    dayOverlay.classList.remove('visible');
+    syncBodyScroll();
+    dayModalAtual = null;
+  }
+
+  // sincroniza o checkbox do modal do dia com o estado (o card é atualizado pelo render)
+  function renderDayModal() {
+    if (!dayModalAtual) return;
+    const selected = state[dayModalAtual];
+    dayModalSelect.classList.toggle('active', selected);
+    dayModalSelect.querySelector('.check').classList.toggle('checked', selected);
+    dayModalSelect.setAttribute('aria-pressed', selected);
+  }
+
+  dayModalSelect.addEventListener('click', () => toggleDay(dayModalAtual));
+  document.getElementById('dayModalClose').addEventListener('click', closeDayModal);
+  dayOverlay.addEventListener('click', (event) => {
+    if (event.target === dayOverlay) closeDayModal();
+  });
+
+  // modal do palestrante: currículo resumido, palestra e opção de marcar o dia da palestra
+  const speakerOverlay = document.getElementById('speakerOverlay');
+  const speakerModalSelect = document.getElementById('speakerModalSelect');
+  let speakerModalAtual = null;
+
+  function openSpeakerModal(s, dayTag) {
+    speakerModalAtual = s;
+
+    const foto = document.getElementById('speakerModalPhoto');
+    foto.src = s.foto;
+    foto.alt = `Foto de ${s.name}`;
+    const modalTag = document.getElementById('speakerModalTag');
+    modalTag.className = dayTag.className;
+    modalTag.textContent = `${dayTag.textContent} · Palestra`;
+    document.getElementById('speakerModalName').textContent = s.name;
+    document.getElementById('speakerModalHeadline').textContent = s.headline;
+    document.getElementById('speakerModalTalk').textContent = s.palestra;
+
+    document.getElementById('speakerModalBio').replaceChildren(...s.bio.map((texto) => {
+      const p = document.createElement('p');
+      p.textContent = texto;
+      return p;
+    }));
+    document.getElementById('speakerModalAreas').replaceChildren(...s.areas.map((area) => {
+      const li = document.createElement('li');
+      li.textContent = area;
+      return li;
+    }));
+    document.getElementById('speakerModalEducation').replaceChildren(...s.formacao.map((f) => {
+      const li = document.createElement('li');
+      li.textContent = f.curso;
+      const local = document.createElement('span');
+      local.textContent = f.local;
+      li.appendChild(local);
+      return li;
+    }));
+    document.getElementById('speakerModalLinks').replaceChildren(...s.links.map((link) => {
+      const a = document.createElement('a');
+      a.className = 'company-email';
+      a.href = link.url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+      const texto = document.createElement('span');
+      texto.textContent = link.label;
+      a.appendChild(texto);
+      return a;
+    }));
+
+    renderSpeakerModal();
+    document.getElementById('speakerModalScroll').scrollTop = 0;
+    speakerOverlay.classList.add('visible');
+    syncBodyScroll();
+  }
+
+  function closeSpeakerModal() {
+    speakerOverlay.classList.remove('visible');
+    syncBodyScroll();
+    speakerModalAtual = null;
+  }
+
+  // "Quero assistir a esta palestra" marca o dia da palestra
+  function renderSpeakerModal() {
+    if (!speakerModalAtual) return;
+    const selected = state[speakerModalAtual.dia];
+    speakerModalSelect.classList.toggle('active', selected);
+    speakerModalSelect.querySelector('.check').classList.toggle('checked', selected);
+    speakerModalSelect.setAttribute('aria-pressed', selected);
+  }
+
+  speakerModalSelect.addEventListener('click', () => toggleDay(speakerModalAtual.dia));
+  document.getElementById('speakerModalClose').addEventListener('click', closeSpeakerModal);
+  speakerOverlay.addEventListener('click', (event) => {
+    if (event.target === speakerOverlay) closeSpeakerModal();
+  });
+
+  // Esc fecha o modal de cima primeiro (empresa ou palestrante podem estar abertos por cima do dia)
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (companyOverlay.classList.contains('visible')) closeCompanyModal();
+    else if (speakerOverlay.classList.contains('visible')) closeSpeakerModal();
+    else if (dayOverlay.classList.contains('visible')) closeDayModal();
   });
 
   const confirmBtn = document.getElementById('confirmBtn');
@@ -908,6 +1272,8 @@
       card.querySelector('.check').classList.toggle('checked', selected);
     });
     renderCompanyModal();
+    renderDayModal();
+    renderSpeakerModal();
 
     const selectedDays = ['day26', 'day27', 'day28'].filter((d) => state[d]).length;
     const selectedCompanies = Object.values(state.companies).filter(Boolean).length;
