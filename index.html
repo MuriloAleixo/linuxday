@@ -128,7 +128,7 @@
   .section-head { text-align: center; margin-bottom: 40px; display: flex; flex-direction: column; gap: 10px; }
   .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: oklch(0.84 0.16 85); text-transform: uppercase; }
   h2 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(26px, 3.4vw, 34px); }
-  .days-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .days-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
 
   .day-card { cursor: pointer; text-align: left; padding: 24px; border-radius: 16px; background: oklch(0.19 0.014 260); border: 1px solid oklch(0.32 0.02 260); display: flex; flex-direction: column; gap: 14px; transition: border-color 0.15s ease; }
   .day-card.active { border-color: oklch(0.84 0.16 85); }
@@ -138,6 +138,7 @@
   .day-tag.linux { background: oklch(0.78 0.15 70 / 0.18); color: oklch(0.78 0.15 70); }
   .day-tag.talks { background: oklch(0.32 0.02 260 / 0.5); color: oklch(0.75 0.02 260); }
   .day-tag.invest { background: oklch(0.75 0.15 220 / 0.18); color: oklch(0.75 0.15 220); }
+  .day-tag.unip { background: oklch(0.78 0.14 150 / 0.18); color: oklch(0.78 0.14 150); }
   .day-desc { margin: 0; font-size: 14.5px; line-height: 1.5; color: oklch(0.70 0.02 260); }
 
   /* checkbox customizado usado nos cards de dia e nos cards de empresa */
@@ -223,7 +224,21 @@
   /* modal de detalhes do dia: reaproveita a estrutura do modal da empresa e fica por baixo dele */
   .day-overlay { z-index: 51; }
   .day-modal-date { font-family: 'JetBrains Mono', monospace; font-size: 40px; font-weight: 600; line-height: 1; color: oklch(0.96 0.005 260); flex-shrink: 0; }
-  .day-modal-desc { margin: 0; font-size: 15px; line-height: 1.6; color: oklch(0.78 0.02 260); }
+  .day-modal-desc p { margin: 0 0 10px; font-size: 15px; line-height: 1.6; color: oklch(0.78 0.02 260); }
+  .day-modal-desc p:last-child { margin-bottom: 0; }
+  /* botão em destaque para o site oficial do dia (ex.: Um dia na UNIP) */
+  .day-link-cta {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 18px; border-radius: 14px;
+    background: #f5c518; color: oklch(0.12 0.01 260); box-shadow: 0 10px 28px oklch(0.84 0.16 85 / 0.3); transition: transform 0.15s ease;
+  }
+  .day-link-cta:hover { color: oklch(0.12 0.01 260); transform: translateY(-1px); }
+  .day-link-cta[hidden] { display: none; }
+  .day-link-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .day-link-text strong { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; line-height: 1.3; }
+  .day-link-text span { font-size: 13px; line-height: 1.4; color: oklch(0.12 0.01 260 / 0.75); }
+  .day-link-cta svg { flex-shrink: 0; }
+  .day-activities { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+  .day-activities li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.5; color: oklch(0.85 0.02 260); }
   .day-info {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 18px 24px; padding: 18px; border-radius: 14px;
     background: oklch(0.15 0.012 260); border: 1px solid oklch(0.32 0.02 260);
@@ -363,7 +378,7 @@
     .days-grid, .companies-grid { grid-template-columns: 1fr; }
   }
   @media (max-width: 960px) and (min-width: 721px) {
-    .companies-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .days-grid, .companies-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 
   /* ajustes finos pra celular: menos espaço vazio, tudo mais compacto */
@@ -415,13 +430,14 @@
   <div class="hero">
     <a class="hero-cta-btn" href="#diasSection">Inscreva-se já!</a>
     <div class="hero-lede">
-      <div class="badge"><span class="badge-dot"></span>26 A 28 DE OUTUBRO</div>
+      <div class="badge"><span class="badge-dot"></span>26 A 29 DE OUTUBRO</div>
       <h1>Semana de<span class="brand-day">Tecnologia</span></h1>
-      <p class="subtitle">Três dias de palestras, exposições e o Linux Day — encerrando com a apresentação de projetos de alunos formandos para o público em geral e empresas.</p>
+      <p class="subtitle">Quatro dias de palestras, exposições e o Linux Day — com a apresentação de projetos de alunos formandos para o público em geral e empresas e, para encerrar, o Um dia na UNIP.</p>
       <div class="pills">
         <span class="pill">26/10 · Palestra</span>
         <span class="pill">27/10 · Palestras</span>
         <span class="pill">28/10 · Público em geral e empresas</span>
+        <span class="pill">29/10 · Um dia na UNIP</span>
       </div>
       <div class="place">UNIP Limeira · Auditório 1</div>
     </div>
@@ -486,6 +502,20 @@
           </div>
         </div>
         <p class="day-desc">Último dia de estandes, com os formandos defendendo seus projetos diante do público em geral e empresas.</p>
+        <span class="card-more">Ver detalhes →</span>
+      </div>
+
+      <div class="day-card" data-day="day29">
+        <div class="day-card-top">
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <span class="day-date">29/10</span>
+            <span class="day-tag unip">Um dia na UNIP</span>
+          </div>
+          <div class="check">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+        </div>
+        <p class="day-desc">Um dia inteiro para conhecer a UNIP: palestras sobre os cursos, visitas guiadas pelo campus e orientação vocacional gratuita.</p>
         <span class="card-more">Ver detalhes →</span>
       </div>
 
@@ -575,7 +605,14 @@
           <h3 id="dayModalTitle"></h3>
         </div>
       </div>
-      <p class="day-modal-desc" id="dayModalDesc"></p>
+      <div class="day-modal-desc" id="dayModalDesc"></div>
+      <a class="day-link-cta" id="dayModalLink" target="_blank" rel="noopener" hidden>
+        <span class="day-link-text">
+          <strong id="dayModalLinkTitle"></strong>
+          <span id="dayModalLinkSub"></span>
+        </span>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </a>
       <div class="day-info">
         <div id="dayModalTimeWrap">
           <p class="company-modal-label">Horário</p>
@@ -583,8 +620,12 @@
         </div>
         <div>
           <p class="company-modal-label">Local</p>
-          <p class="day-info-value">UNIP Limeira · Auditório 1</p>
+          <p class="day-info-value" id="dayModalLocal"></p>
         </div>
+      </div>
+      <div id="dayModalActivitiesWrap" hidden>
+        <p class="company-modal-label">O que vai acontecer</p>
+        <ul class="day-activities" id="dayModalActivities"></ul>
       </div>
       <div id="dayModalScheduleWrap" hidden>
         <p class="company-modal-label">Programação</p>
@@ -825,11 +866,15 @@
     }
   ];
 
+  // dias do evento, na ordem; usados no resumo, no envio da inscrição e na contagem de dias marcados
+  const DIAS = ['day26', 'day27', 'day28', 'day29'];
+
   // guarda quais dias e quais empresas estão marcados
   const state = {
     day26: false,
     day27: false,
     day28: false,
+    day29: false,
     confirmed: false,
     companies: {}
   };
@@ -951,12 +996,34 @@
     render();
   }
 
-  // detalhes extras de cada dia (data, tag e descrição vêm do próprio card).
+  // detalhes extras de cada dia (data, tag e descrição curta vêm do próprio card).
+  // sobre: parágrafos que substituem a descrição do card dentro do modal (opcional)
+  // link: botão em destaque para um site externo (opcional)
+  // atividades: lista "O que vai acontecer" (opcional)
   // programacao: lista de { hora: '19h30', titulo: '...' }; só aparece no modal quando tiver itens
   const dayDetails = {
-    day26: { titulo: 'Segunda-feira, 26 de outubro', horario: 'A partir das 19h30', programacao: [] },
-    day27: { titulo: 'Terça-feira, 27 de outubro', horario: '', programacao: [] },
-    day28: { titulo: 'Quarta-feira, 28 de outubro', horario: '', programacao: [] }
+    day26: { titulo: 'Segunda-feira, 26 de outubro', horario: 'A partir das 19h30', local: 'UNIP Limeira · Auditório 1', programacao: [] },
+    day27: { titulo: 'Terça-feira, 27 de outubro', horario: '', local: 'UNIP Limeira · Auditório 1', programacao: [] },
+    day28: { titulo: 'Quarta-feira, 28 de outubro', horario: '', local: 'UNIP Limeira · Auditório 1', programacao: [] },
+    day29: {
+      titulo: 'Quinta-feira, 29 de outubro', horario: '', local: 'UNIP Limeira', programacao: [],
+      sobre: [
+        'Um dia inteiro para você decidir seu futuro. O Um dia na UNIP abre as portas do campus para quem está escolhendo um curso e quer conhecer a universidade de perto, com todo o apoio da UNIP para as suas escolhas.',
+        'A inscrição é feita no site oficial do evento, onde você escolhe a unidade, a data e o horário da visita.'
+      ],
+      link: {
+        url: 'https://www.unip.br/umdianaunip/',
+        titulo: 'Acesse o site oficial e faça sua inscrição',
+        subtitulo: 'Programação, datas e inscrição · unip.br/umdianaunip'
+      },
+      atividades: [
+        'Palestras sobre os cursos',
+        'Estandes e atividades das áreas de Humanas, Exatas e Saúde',
+        'Visitas guiadas pelo campus: salas de aula, biblioteca, laboratórios e ambientes especiais',
+        'Orientação vocacional gratuita',
+        'Tira-dúvidas sobre os cursos e sorteio de brindes'
+      ]
+    }
   };
 
   // palestrantes (dados do currículo enviado); "dia" liga o palestrante ao card do dia
@@ -1005,10 +1072,33 @@
     modalTag.className = tag.className;
     modalTag.textContent = tag.textContent;
     document.getElementById('dayModalTitle').textContent = detalhes.titulo;
-    document.getElementById('dayModalDesc').textContent = card.querySelector('.day-desc').textContent;
+    const sobre = detalhes.sobre || [card.querySelector('.day-desc').textContent];
+    document.getElementById('dayModalDesc').replaceChildren(...sobre.map((texto) => {
+      const p = document.createElement('p');
+      p.textContent = texto;
+      return p;
+    }));
+
+    const link = document.getElementById('dayModalLink');
+    link.hidden = !detalhes.link;
+    if (detalhes.link) {
+      link.href = detalhes.link.url;
+      document.getElementById('dayModalLinkTitle').textContent = detalhes.link.titulo;
+      document.getElementById('dayModalLinkSub').textContent = detalhes.link.subtitulo;
+    }
 
     document.getElementById('dayModalTimeWrap').hidden = !detalhes.horario;
     document.getElementById('dayModalTime').textContent = detalhes.horario;
+    document.getElementById('dayModalLocal').textContent = detalhes.local;
+
+    const atividades = detalhes.atividades || [];
+    document.getElementById('dayModalActivitiesWrap').hidden = atividades.length === 0;
+    document.getElementById('dayModalActivities').replaceChildren(...atividades.map((texto) => {
+      const li = document.createElement('li');
+      li.innerHTML = '<span class="shirt-benefit-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="#1a1206" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>';
+      li.append(texto);
+      return li;
+    }));
 
     document.getElementById('dayModalScheduleWrap').hidden = detalhes.programacao.length === 0;
     document.getElementById('dayModalSchedule').replaceChildren(...detalhes.programacao.map((item) => {
@@ -1148,11 +1238,12 @@
   const dayLabels = {
     day26: '26/10 - Palestra',
     day27: '27/10 - Palestras',
-    day28: '28/10 - Empresas'
+    day28: '28/10 - Empresas',
+    day29: '29/10 - Um dia na UNIP'
   };
 
   confirmBtn.addEventListener('click', () => {
-    const diasSelecionados = ['day26', 'day27', 'day28'].filter((d) => state[d]).map((d) => dayLabels[d]);
+    const diasSelecionados = DIAS.filter((d) => state[d]).map((d) => dayLabels[d]);
     if (diasSelecionados.length === 0) return;
 
     const empresasSelecionadas = companyData.filter((c) => state.companies[c.id]).map((c) => c.name);
@@ -1185,7 +1276,7 @@
       nome,
       telefone,
       email,
-      dias: ['day26', 'day27', 'day28'].filter((d) => state[d]).map((d) => dayLabels[d]).join('; '),
+      dias: DIAS.filter((d) => state[d]).map((d) => dayLabels[d]).join('; '),
       empresas: companyData.filter((c) => state.companies[c.id]).map((c) => c.name).join('; ')
     };
 
@@ -1240,7 +1331,7 @@
     renderDayModal();
     renderSpeakerModal();
 
-    const selectedDays = ['day26', 'day27', 'day28'].filter((d) => state[d]).length;
+    const selectedDays = DIAS.filter((d) => state[d]).length;
     const selectedCompanies = Object.values(state.companies).filter(Boolean).length;
     // no dia 28 é preciso marcar pelo menos uma empresa pra poder confirmar
     const canConfirm = selectedDays > 0 && (!state.day28 || selectedCompanies > 0);
@@ -1281,7 +1372,7 @@
   (function () {
     const MES_EVENTO = 9; // outubro (Date usa mês 0-indexado)
     const DIA_INICIO = 26;
-    const DIA_FIM = 28;
+    const DIA_FIM = 29;
     const HORA_ABERTURA = 19;
     const MINUTO_ABERTURA = 30;
 
@@ -1306,7 +1397,7 @@
       const restante = edicaoAtual(Date.now()).inicio - Date.now();
 
       if (restante <= 0) {
-        countdownBox.innerHTML = '<div class="countdown-started">O Linux Day começou! Aproveite os três dias de evento.</div>';
+        countdownBox.innerHTML = '<div class="countdown-started">O Linux Day começou! Aproveite os quatro dias de evento.</div>';
         return;
       }
 
